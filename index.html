@@ -6,6 +6,18 @@
   <title>BlueScapes | Custom Pools & Luxury Outdoor Living – Utah</title>
   <meta name="description" content="Utah pool builders with 60+ years of combined team expertise. Custom pools, luxury spas, swim spas & backyard transformations. Get your free quote today." />
 
+  <!-- Google Analytics GA4 — replace G-XXXXXXXXXX with your Measurement ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX', {
+      send_page_view: true,
+      cookie_flags: 'SameSite=None;Secure',
+    });
+  </script>
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1394,37 +1406,140 @@
     </div>
   </footer>
 
-  <!-- ─── JS: Scroll Reveal ────────────────────────────── -->
   <script>
-    const observer = new IntersectionObserver((entries) => {
+    // ── Scroll Reveal ─────────────────────────────────────
+    const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(e => {
         if (e.isIntersecting) {
           e.target.classList.add('visible');
-          observer.unobserve(e.target);
+          revealObserver.unobserve(e.target);
         }
       });
     }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    // Smooth anchor scroll with offset for fixed navbar
+    // ── Smooth Scroll ─────────────────────────────────────
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', e => {
         const target = document.querySelector(a.getAttribute('href'));
         if (!target) return;
         e.preventDefault();
-        const offset = 80;
-        window.scrollTo({ top: target.offsetTop - offset, behavior: 'smooth' });
+        window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
       });
     });
 
-    // Form submit (placeholder — connect to backend / Formspree / EmailJS)
-    document.querySelector('form').addEventListener('submit', function(e) {
+    // ── UTM Params ────────────────────────────────────────
+    const utmParams = (() => {
+      const p = new URLSearchParams(location.search);
+      return {
+        utm_source:   p.get('utm_source')   || '',
+        utm_medium:   p.get('utm_medium')   || '',
+        utm_campaign: p.get('utm_campaign') || '',
+      };
+    })();
+
+    // ── GA4 Event Helper ──────────────────────────────────
+    function track(eventName, params = {}) {
+      if (typeof gtag === 'function') {
+        gtag('event', eventName, { ...utmParams, ...params });
+      }
+      // Also ping our own server for source-of-truth reporting
+      fetch('/api/event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event: eventName, page: location.pathname, data: params }),
+      }).catch(() => {});
+    }
+
+    // ── CTA Button Clicks ─────────────────────────────────
+    document.querySelectorAll('.btn--primary, .btn--outline, .btn--dark').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const label = btn.textContent.trim().slice(0, 60);
+        const href  = btn.getAttribute('href') || '';
+        if (href.startsWith('tel:')) {
+          track('phone_click', { phone_number: href.replace('tel:', '') });
+        } else {
+          track('cta_click', { cta_text: label, destination: href });
+        }
+      });
+    });
+
+    // ── Phone link clicks ─────────────────────────────────
+    document.querySelectorAll('a[href^="tel:"]').forEach(a => {
+      a.addEventListener('click', () => track('phone_click', { phone_number: a.href.replace('tel:', '') }));
+    });
+
+    // ── Section Visibility ────────────────────────────────
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting && e.intersectionRatio >= 0.4) {
+          const id = e.target.getAttribute('id');
+          if (id) track('section_view', { section: id });
+          sectionObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    document.querySelectorAll('section[id], div[id]').forEach(s => sectionObserver.observe(s));
+
+    // ── Form Tracking + Submission ────────────────────────
+    const form     = document.querySelector('form');
+    const submitBtn = form.querySelector('.form-submit');
+    let formStarted = false;
+
+    form.querySelectorAll('input, select, textarea').forEach(field => {
+      field.addEventListener('focus', () => {
+        if (!formStarted) {
+          formStarted = true;
+          track('form_start', { form_id: 'quote_request' });
+        }
+      }, { once: true });
+    });
+
+    form.addEventListener('submit', async function(e) {
       e.preventDefault();
-      const btn = this.querySelector('.form-submit');
-      btn.textContent = '✓ Request Sent! We\'ll be in touch soon.';
-      btn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
-      btn.disabled = true;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> Sending…';
+
+      const fd = new FormData(form);
+
+      // Build payload, split name fields
+      const payload = {
+        first_name:   form.querySelector('#fname').value.trim(),
+        last_name:    form.querySelector('#lname').value.trim(),
+        email:        form.querySelector('#email').value.trim(),
+        phone:        form.querySelector('#phone').value.trim(),
+        project_type: form.querySelector('#project').value,
+        message:      form.querySelector('#message').value.trim(),
+        ...utmParams,
+      };
+
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          track('generate_lead', {
+            currency: 'USD',
+            project_type: payload.project_type,
+            lead_id: data.id,
+          });
+          submitBtn.textContent = '✓ Request Sent! We\'ll be in touch soon.';
+          submitBtn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
+          form.reset();
+          formStarted = false;
+        } else {
+          throw new Error('Server error');
+        }
+      } catch {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Send My Free Quote Request';
+        submitBtn.style.background = '';
+        alert('Something went wrong. Please call us at 801.360.5577 or try again.');
+      }
     });
   </script>
 

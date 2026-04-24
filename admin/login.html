@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BlueScapes Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy: #0A2342; --cyan: #00AEEF; --cyan-dark: #0090CC;
+      --white: #fff; --sky: #E8F7FD; --red: #ef4444;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--navy);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background-image: radial-gradient(circle at 20% 50%, rgba(0,174,239,0.08) 0%, transparent 60%),
+                        radial-gradient(circle at 80% 20%, rgba(0,174,239,0.06) 0%, transparent 50%);
+    }
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 48px 44px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+    }
+    .logo {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--navy);
+      text-align: center;
+      margin-bottom: 6px;
+      letter-spacing: -.02em;
+    }
+    .logo span { color: var(--cyan-dark); }
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #6B8BA4;
+      margin-bottom: 36px;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .error-banner {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: var(--red);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      display: none;
+    }
+    .error-banner.show { display: block; }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #2E4A6A;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid rgba(10,35,66,0.14);
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      color: var(--navy);
+      background: #F5FAFE;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      margin-bottom: 18px;
+    }
+    input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(0,174,239,0.12);
+    }
+    button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #0090CC, #00AEEF, #33C3FF);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .25s;
+      box-shadow: 0 6px 24px rgba(0,174,239,0.4);
+      margin-top: 4px;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: 0 10px 32px rgba(0,174,239,0.5); }
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #6B8BA4;
+      text-decoration: none;
+    }
+    .back:hover { color: var(--cyan-dark); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">BLUE<span>SCAPES</span></div>
+    <div class="subtitle">Admin Dashboard</div>
+
+    <div class="error-banner" id="errorBanner">
+      Incorrect username or password. Please try again.
+    </div>
+
+    <form method="POST" action="/admin/login">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="admin" autocomplete="username" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="••••••••••" autocomplete="current-password" required />
+
+      <button type="submit">Sign In</button>
+    </form>
+    <a href="/" class="back">← Back to website</a>
+  </div>
+
+  <script>
+    if (new URLSearchParams(location.search).get('error')) {
+      document.getElementById('errorBanner').classList.add('show');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BlueScapes — Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy:#0A2342; --navy-mid:#0D2E57; --navy-light:#1A3A5C;
+      --cyan:#00AEEF; --cyan-dark:#0090CC; --cyan-light:#33C3FF;
+      --sky:#E8F7FD; --white:#fff; --offwhite:#F5FAFE;
+      --text:#0A2342; --text-mid:#2E4A6A; --text-light:#6B8BA4;
+      --border:rgba(10,35,66,0.10);
+      --green:#10b981; --yellow:#f59e0b; --red:#ef4444; --purple:#8b5cf6;
+      --sidebar-w:240px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Inter', sans-serif; background: #F0F4F8; color: var(--text); }
+
+    /* ── Layout ── */
+    .layout { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .sidebar__logo {
+      padding: 24px 22px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .sidebar__logo-text {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -.02em;
+    }
+    .sidebar__logo-text span { color: var(--cyan); }
+    .sidebar__label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-top: 3px;
+    }
+    .sidebar__nav { padding: 20px 12px; flex: 1; }
+    .sidebar__section {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      padding: 0 10px;
+      margin: 18px 0 8px;
+    }
+    .sidebar__item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.65);
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: none;
+      margin-bottom: 2px;
+    }
+    .sidebar__item:hover { background: rgba(255,255,255,0.07); color: #fff; }
+    .sidebar__item.active { background: rgba(0,174,239,0.18); color: var(--cyan-light); }
+    .sidebar__item svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .sidebar__footer {
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    /* ── Main ── */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* ── Topbar ── */
+    .topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .topbar__title { font-size: 17px; font-weight: 700; color: var(--navy); }
+    .topbar__right { display: flex; align-items: center; gap: 12px; }
+    .topbar__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,174,239,0.10);
+      color: var(--cyan-dark);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 100px;
+    }
+    .topbar__badge .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; } 50% { opacity:.4; }
+    }
+
+    /* ── Content ── */
+    .content { flex: 1; overflow-y: auto; padding: 28px; }
+
+    /* ── Stat Cards ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 22px 22px 18px;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card__icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      font-size: 18px;
+    }
+    .stat-card__num {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+    .stat-card__label { font-size: 13px; color: var(--text-light); font-weight: 500; }
+    .stat-card__bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 0 0 14px 14px;
+    }
+
+    /* ── Breakdown Row ── */
+    .breakdown-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 22px;
+    }
+    .panel__title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-mid);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .bar-item { margin-bottom: 12px; }
+    .bar-item__top { display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .bar-item__name { font-size: 13px; font-weight: 500; color: var(--text); }
+    .bar-item__count { font-size: 13px; font-weight: 700; color: var(--cyan-dark); }
+    .bar-track { height: 6px; background: #EEF4F8; border-radius: 100px; }
+    .bar-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--cyan-dark), var(--cyan-light)); transition: width .6s ease; }
+    .source-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .source-item:last-child { border-bottom: none; }
+    .source-item__name { font-weight: 500; color: var(--text); }
+    .source-badge {
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* ── Leads Table Panel ── */
+    .leads-panel { background: var(--white); border: 1px solid var(--border); border-radius: 14px; }
+    .leads-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .leads-header__left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .search-input {
+      padding: 9px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--offwhite);
+      outline: none;
+      transition: border-color .2s;
+      width: 200px;
+    }
+    .search-input:focus { border-color: var(--cyan); }
+    select.filter-select {
+      padding: 9px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--offwhite);
+      outline: none;
+      cursor: pointer;
+    }
+    .btn-export {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 16px;
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+      text-decoration: none;
+    }
+    .btn-export:hover { background: var(--navy-mid); }
+    .btn-export svg { width: 14px; height: 14px; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th {
+      padding: 11px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--sky); }
+    tbody tr.expanded { background: var(--sky); }
+    td {
+      padding: 13px 16px;
+      color: var(--text);
+      vertical-align: middle;
+    }
+    td.muted { color: var(--text-light); }
+    .lead-name { font-weight: 600; }
+    .lead-email { color: var(--text-mid); font-size: 12px; }
+
+    /* ── Status Badges ── */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+    .badge-new      { background:#EFF6FF; color:#1D4ED8; }
+    .badge-contacted{ background:#F0FDF4; color:#166534; }
+    .badge-quoted   { background:#FFFBEB; color:#92400E; }
+    .badge-won      { background:#D1FAE5; color:#065F46; }
+    .badge-lost     { background:#FEF2F2; color:#991B1B; }
+
+    /* ── Detail Drawer ── */
+    .detail-row td {
+      padding: 0;
+      background: #F8FAFC;
+      border-bottom: 1px solid var(--border);
+    }
+    .detail-inner {
+      padding: 22px 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+    }
+    .detail-section { display: flex; flex-direction: column; gap: 8px; }
+    .detail-section__title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin-bottom: 4px;
+    }
+    .detail-field { font-size: 13px; color: var(--text); }
+    .detail-field strong { color: var(--text-mid); display: block; font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+    .detail-msg {
+      font-size: 13px;
+      color: var(--text-mid);
+      line-height: 1.6;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      grid-column: span 2;
+    }
+    .detail-actions { display: flex; flex-direction: column; gap: 10px; }
+    .detail-status {
+      padding: 9px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      background: var(--white);
+      color: var(--text);
+      outline: none;
+      width: 100%;
+    }
+    .detail-notes {
+      padding: 9px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--white);
+      resize: vertical;
+      outline: none;
+      width: 100%;
+      min-height: 80px;
+    }
+    .detail-notes:focus, .detail-status:focus { border-color: var(--cyan); }
+    .btn-save {
+      padding: 9px 18px;
+      background: linear-gradient(135deg, #0090CC, #00AEEF);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-save:hover { opacity: .9; }
+    .btn-del {
+      padding: 9px 18px;
+      background: #fef2f2;
+      color: var(--red);
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-del:hover { background: #fee2e2; }
+
+    /* ── Empty State ── */
+    .empty {
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--text-light);
+    }
+    .empty svg { width: 48px; height: 48px; margin: 0 auto 16px; opacity: .3; }
+    .empty p { font-size: 15px; }
+
+    /* ── Loading ── */
+    .spinner {
+      display: inline-block;
+      width: 20px; height: 20px;
+      border: 2px solid rgba(0,174,239,0.2);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      background: var(--navy);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,.25);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .3s ease;
+      z-index: 9999;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.error   { border-left: 3px solid var(--red); }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .breakdown-row { grid-template-columns: 1fr; }
+      .detail-inner { grid-template-columns: 1fr; }
+      .detail-msg { grid-column: span 1; }
+    }
+    @media (max-width: 640px) {
+      .sidebar { display: none; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .content { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar__logo">
+      <div class="sidebar__logo-text">BLUE<span>SCAPES</span></div>
+      <div class="sidebar__label">Admin Panel</div>
+    </div>
+    <nav class="sidebar__nav">
+      <div class="sidebar__section">Main</div>
+      <a class="sidebar__item active" onclick="showView('leads')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Leads
+      </a>
+      <a class="sidebar__item" onclick="showView('analytics')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Analytics
+      </a>
+      <div class="sidebar__section">Site</div>
+      <a class="sidebar__item" href="/" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        View Website
+      </a>
+    </nav>
+    <div class="sidebar__footer">
+      <a href="/admin/logout" class="sidebar__item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar__title" id="viewTitle">Leads</div>
+      <div class="topbar__right">
+        <div class="topbar__badge">
+          <span class="dot"></span>
+          Live
+        </div>
+        <a href="/admin/logout" style="font-size:13px;color:#6B8BA4;text-decoration:none;">Sign out</a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ══ LEADS VIEW ══ -->
+      <div id="view-leads">
+
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <div class="stat-card__icon" style="background:rgba(0,174,239,0.10);">📋</div>
+            <div class="stat-card__num" id="statTotal">—</div>
+            <div class="stat-card__label">Total Leads</div>
+            <div class="stat-card__bar" style="background:linear-gradient(90deg,var(--cyan-dark),var(--cyan-light))"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon" style="background:rgba(16,185,129,0.10);">🆕</div>
+            <div class="stat-card__num" id="statToday">—</div>
+            <div class="stat-card__label">New Today</div>
+            <div class="stat-card__bar" style="background:linear-gradient(90deg,#059669,#10b981)"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon" style="background:rgba(245,158,11,0.10);">📅</div>
+            <div class="stat-card__num" id="statWeek">—</div>
+            <div class="stat-card__label">This Week</div>
+            <div class="stat-card__bar" style="background:linear-gradient(90deg,#d97706,#f59e0b)"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon" style="background:rgba(239,68,68,0.10);">🔔</div>
+            <div class="stat-card__num" id="statPending">—</div>
+            <div class="stat-card__label">Needs Follow-up</div>
+            <div class="stat-card__bar" style="background:linear-gradient(90deg,#dc2626,#ef4444)"></div>
+          </div>
+        </div>
+
+        <!-- Breakdown -->
+        <div class="breakdown-row">
+          <div class="panel">
+            <div class="panel__title">By Project Type</div>
+            <div id="typeBreakdown"><div class="spinner"></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel__title">By Traffic Source</div>
+            <div id="sourceBreakdown"><div class="spinner"></div></div>
+          </div>
+        </div>
+
+        <!-- Leads Table -->
+        <div class="leads-panel">
+          <div class="leads-header">
+            <div class="leads-header__left">
+              <input class="search-input" type="search" placeholder="Search name, email, phone…" id="searchInput" />
+              <select class="filter-select" id="statusFilter">
+                <option value="all">All Statuses</option>
+                <option value="new">New</option>
+                <option value="contacted">Contacted</option>
+                <option value="quoted">Quoted</option>
+                <option value="won">Won</option>
+                <option value="lost">Lost</option>
+              </select>
+              <select class="filter-select" id="projectFilter">
+                <option value="all">All Projects</option>
+                <option>Custom Pool</option>
+                <option>Luxury Spa</option>
+                <option>Swim Spa</option>
+                <option>Cold Plunge System</option>
+                <option>Backyard Transformation</option>
+                <option>Pool + Spa Combo</option>
+              </select>
+            </div>
+            <a href="/admin/api/export" class="btn-export">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export CSV
+            </a>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Project</th>
+                  <th>Source</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="leadsBody">
+                <tr><td colspan="7" style="text-align:center;padding:40px;"><div class="spinner" style="margin:0 auto;"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /view-leads -->
+
+      <!-- ══ ANALYTICS VIEW ══ -->
+      <div id="view-analytics" style="display:none;">
+        <div class="panel" style="max-width:700px;">
+          <div class="panel__title">Google Analytics</div>
+          <p style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:18px;">
+            GA4 is embedded on your landing page. To view full analytics:
+          </p>
+          <a href="https://analytics.google.com" target="_blank" class="btn-export" style="display:inline-flex;margin-bottom:16px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Open Google Analytics
+          </a>
+          <p style="font-size:13px;color:var(--text-light);">
+            Events tracked: <strong>page_view</strong>, <strong>generate_lead</strong> (form submit), <strong>cta_click</strong>, <strong>phone_click</strong>, <strong>form_start</strong>
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Helpers ──────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+let allData = { leads: [], stats: {} };
+let expandedRow = null;
+
+function showToast(msg, type = 'success') {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function fmtDate(dt) {
+  const d = new Date(dt);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
+         d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
+function badgeHtml(status) {
+  const map = { new:'badge-new', contacted:'badge-contacted', quoted:'badge-quoted', won:'badge-won', lost:'badge-lost' };
+  return `<span class="badge ${map[status] || 'badge-new'}">${status || 'new'}</span>`;
+}
+
+function projectShort(p) {
+  const map = {
+    'Custom Pool':'Pool', 'Luxury Spa':'Spa', 'Swim Spa':'Swim Spa',
+    'Cold Plunge System':'Cold Plunge', 'Backyard Transformation':'Backyard',
+    'Pool + Spa Combo':'Pool+Spa',
+  };
+  return map[p] || p || '—';
+}
+
+// ── Views ─────────────────────────────────────────────────
+function showView(name) {
+  document.querySelectorAll('[id^="view-"]').forEach(el => el.style.display = 'none');
+  $(`view-${name}`).style.display = 'block';
+  document.querySelectorAll('.sidebar__item').forEach(el => el.classList.remove('active'));
+  $('viewTitle').textContent = name === 'leads' ? 'Leads' : 'Analytics';
+}
+
+// ── Load data ─────────────────────────────────────────────
+async function loadLeads() {
+  const status  = $('statusFilter').value;
+  const project = $('projectFilter').value;
+  const search  = $('searchInput').value.trim();
+  const params  = new URLSearchParams({ status, project, search });
+
+  try {
+    const res  = await fetch(`/admin/api/leads?${params}`);
+    const data = await res.json();
+    allData    = data;
+    renderStats(data.stats);
+    renderBreakdown(data.stats);
+    renderTable(data.leads);
+  } catch(e) {
+    showToast('Failed to load leads', 'error');
+  }
+}
+
+function renderStats(s) {
+  $('statTotal').textContent   = s.total   ?? 0;
+  $('statToday').textContent   = s.today   ?? 0;
+  $('statWeek').textContent    = s.week    ?? 0;
+  $('statPending').textContent = s.pending ?? 0;
+}
+
+function renderBreakdown(s) {
+  const max = Math.max(...(s.byType || []).map(x => x.n), 1);
+  $('typeBreakdown').innerHTML = (s.byType || []).length
+    ? (s.byType || []).map(x => `
+        <div class="bar-item">
+          <div class="bar-item__top">
+            <span class="bar-item__name">${x.project_type || 'Not specified'}</span>
+            <span class="bar-item__count">${x.n}</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.round(x.n/max*100)}%"></div></div>
+        </div>`).join('')
+    : '<p style="font-size:13px;color:var(--text-light)">No data yet</p>';
+
+  const colors = ['#0090CC','#10b981','#f59e0b','#8b5cf6','#ef4444'];
+  $('sourceBreakdown').innerHTML = (s.bySource || []).length
+    ? (s.bySource || []).map((x, i) => `
+        <div class="source-item">
+          <span class="source-item__name">${x.src}</span>
+          <span class="source-badge" style="background:${colors[i%colors.length]}18;color:${colors[i%colors.length]}">${x.n} lead${x.n!==1?'s':''}</span>
+        </div>`).join('')
+    : '<p style="font-size:13px;color:var(--text-light)">No data yet</p>';
+}
+
+function renderTable(leads) {
+  expandedRow = null;
+  const tbody = $('leadsBody');
+  if (!leads.length) {
+    tbody.innerHTML = `<tr><td colspan="7">
+      <div class="empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <p>No leads found</p>
+      </div>
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = leads.map(l => `
+    <tr data-id="${l.id}" onclick="toggleDetail(this, ${JSON.stringify(JSON.stringify(l))})">
+      <td class="muted">#${l.id}</td>
+      <td class="muted" style="white-space:nowrap">${fmtDate(l.created_at)}</td>
+      <td>
+        <div class="lead-name">${l.first_name} ${l.last_name}</div>
+        <div class="lead-email">${l.email}</div>
+      </td>
+      <td>${l.phone}</td>
+      <td>${projectShort(l.project_type)}</td>
+      <td class="muted">${l.utm_source || 'direct'}</td>
+      <td>${badgeHtml(l.status)}</td>
+    </tr>
+    <tr class="detail-row" id="detail-${l.id}" style="display:none">
+      <td colspan="7"></td>
+    </tr>
+  `).join('');
+}
+
+function toggleDetail(row, jsonStr) {
+  const lead = JSON.parse(jsonStr);
+  const detailRow = $(`detail-${lead.id}`);
+  const isOpen = detailRow.style.display !== 'none';
+
+  // Close all
+  document.querySelectorAll('.detail-row').forEach(r => r.style.display = 'none');
+  document.querySelectorAll('tbody tr:not(.detail-row)').forEach(r => r.classList.remove('expanded'));
+
+  if (isOpen) return;
+
+  row.classList.add('expanded');
+  detailRow.style.display = 'table-row';
+  detailRow.querySelector('td').innerHTML = `
+    <div class="detail-inner">
+      <div class="detail-section">
+        <div class="detail-section__title">Contact Info</div>
+        <div class="detail-field"><strong>Name</strong>${lead.first_name} ${lead.last_name}</div>
+        <div class="detail-field"><strong>Email</strong><a href="mailto:${lead.email}" style="color:var(--cyan-dark)">${lead.email}</a></div>
+        <div class="detail-field"><strong>Phone</strong><a href="tel:${lead.phone}" style="color:var(--cyan-dark)">${lead.phone}</a></div>
+        <div class="detail-field"><strong>Submitted</strong>${fmtDate(lead.created_at)}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section__title">Traffic</div>
+        <div class="detail-field"><strong>Source</strong>${lead.utm_source || 'direct'}</div>
+        <div class="detail-field"><strong>Medium</strong>${lead.utm_medium || '—'}</div>
+        <div class="detail-field"><strong>Campaign</strong>${lead.utm_campaign || '—'}</div>
+        <div class="detail-field"><strong>Referrer</strong>${lead.referrer ? `<span style="font-size:11px">${lead.referrer}</span>` : '—'}</div>
+      </div>
+      <div class="detail-section detail-actions">
+        <div class="detail-section__title">Update Lead</div>
+        <select class="detail-status" id="status-${lead.id}">
+          <option value="new"       ${lead.status==='new'?'selected':''}>🔵 New</option>
+          <option value="contacted" ${lead.status==='contacted'?'selected':''}>🟢 Contacted</option>
+          <option value="quoted"    ${lead.status==='quoted'?'selected':''}>🟡 Quoted</option>
+          <option value="won"       ${lead.status==='won'?'selected':''}>✅ Won</option>
+          <option value="lost"      ${lead.status==='lost'?'selected':''}>❌ Lost</option>
+        </select>
+        <textarea class="detail-notes" id="notes-${lead.id}" placeholder="Add private notes…">${lead.notes || ''}</textarea>
+        <div style="display:flex;gap:8px">
+          <button class="btn-save" onclick="saveLead(event,${lead.id})">Save</button>
+          <button class="btn-del"  onclick="deleteLead(event,${lead.id})">Delete</button>
+        </div>
+      </div>
+      ${lead.message ? `<div class="detail-msg"><strong style="display:block;font-size:11px;font-weight:700;color:var(--text-light);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">Message</strong>${lead.message}</div>` : ''}
+    </div>
+  `;
+}
+
+async function saveLead(e, id) {
+  e.stopPropagation();
+  const status = $(`status-${id}`).value;
+  const notes  = $(`notes-${id}`).value;
+  await fetch(`/admin/api/leads/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status, notes }),
+  });
+  showToast('Lead updated');
+  loadLeads();
+}
+
+async function deleteLead(e, id) {
+  e.stopPropagation();
+  if (!confirm('Delete this lead permanently?')) return;
+  await fetch(`/admin/api/leads/${id}`, { method: 'DELETE' });
+  showToast('Lead deleted');
+  loadLeads();
+}
+
+// ── Filters ───────────────────────────────────────────────
+let debounceTimer;
+$('searchInput').addEventListener('input',  () => { clearTimeout(debounceTimer); debounceTimer = setTimeout(loadLeads, 300); });
+$('statusFilter').addEventListener('change',  loadLeads);
+$('projectFilter').addEventListener('change', loadLeads);
+
+// ── Auto-refresh every 60s ────────────────────────────────
+loadLeads();
+setInterval(loadLeads, 60000);
+</script>
+</body>
+</html>
