@@ -1,5 +1,4 @@
 const express = require('express');
-const session = require('express-session');
 const path    = require('path');
 const db      = require('./db/setup');
 
@@ -9,26 +8,21 @@ const PORT = process.env.PORT || 3000;
 const ADMIN_USER = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'bluescapes2025';
 
-// Trust Railway's reverse proxy so secure cookies work correctly
-app.set('trust proxy', 1);
-
 // ── Middleware ────────────────────────────────────────────
 app.use(express.static(path.join(__dirname), { index: false, dotfiles: 'deny' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'dev-secret-change-me',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: 'auto',
-    httpOnly: true,
-    maxAge: 8 * 60 * 60 * 1000,
-  },
-}));
 
-const requireAuth = (req, res, next) =>
-  req.session.authenticated ? next() : res.redirect('/admin/login');
+// ── HTTP Basic Auth for /admin ────────────────────────────
+const requireAuth = (req, res, next) => {
+  const header = req.headers.authorization || '';
+  if (header.startsWith('Basic ')) {
+    const [user, pass] = Buffer.from(header.slice(6), 'base64').toString().split(':');
+    if (user === ADMIN_USER && pass === ADMIN_PASS) return next();
+  }
+  res.setHeader('WWW-Authenticate', 'Basic realm="BlueScapes Admin"');
+  res.status(401).send('Login required');
+};
 
 // ── Landing Page ──────────────────────────────────────────
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
@@ -71,23 +65,6 @@ app.post('/api/event', async (req, res) => {
   } catch { /* never block the page for analytics */ }
   res.json({ ok: true });
 });
-
-// ── Admin: Auth ───────────────────────────────────────────
-app.get('/admin/login', (req, res) => {
-  if (req.session.authenticated) return res.redirect('/admin');
-  res.sendFile(path.join(__dirname, 'admin', 'login.html'));
-});
-
-app.post('/admin/login', (req, res) => {
-  const { username, password } = req.body;
-  if (username === ADMIN_USER && password === ADMIN_PASS) {
-    req.session.authenticated = true;
-    return res.redirect('/admin');
-  }
-  res.redirect('/admin/login?error=1');
-});
-
-app.get('/admin/logout', (req, res) => req.session.destroy(() => res.redirect('/admin/login')));
 
 // ── Admin: Dashboard ──────────────────────────────────────
 app.get('/admin', requireAuth, (req, res) =>
@@ -138,7 +115,7 @@ app.get('*', (req, res) => res.redirect('/'));
 
 // ── Start ─────────────────────────────────────────────────
 if (!process.env.DATABASE_URL) {
-  console.error('ERROR: DATABASE_URL environment variable is not set.');
+  console.error('ERROR: DATABASE_URL is not set.');
   process.exit(1);
 }
 
