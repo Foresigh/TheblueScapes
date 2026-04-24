@@ -681,6 +681,29 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// ── Auth ──────────────────────────────────────────────────
+const TOKEN = localStorage.getItem('admin_token');
+if (!TOKEN) location.href = '/admin/login';
+
+function authFetch(url, opts = {}) {
+  return fetch(url, {
+    ...opts,
+    headers: { ...(opts.headers || {}), 'Authorization': `Bearer ${TOKEN}` },
+  }).then(r => {
+    if (r.status === 401) { localStorage.removeItem('admin_token'); location.href = '/admin/login'; }
+    return r;
+  });
+}
+
+// Sign out
+document.querySelectorAll('a[href="/admin/logout"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    localStorage.removeItem('admin_token');
+    location.href = '/admin/login';
+  });
+});
+
 // ── Helpers ──────────────────────────────────────────────
 const $ = id => document.getElementById(id);
 let allData = { leads: [], stats: {} };
@@ -729,7 +752,7 @@ async function loadLeads() {
   const params  = new URLSearchParams({ status, project, search });
 
   try {
-    const res  = await fetch(`/admin/api/leads?${params}`);
+    const res  = await authFetch(`/admin/api/leads?${params}`);
     const data = await res.json();
     allData    = data;
     renderStats(data.stats);
@@ -855,7 +878,7 @@ async function saveLead(e, id) {
   e.stopPropagation();
   const status = $(`status-${id}`).value;
   const notes  = $(`notes-${id}`).value;
-  await fetch(`/admin/api/leads/${id}`, {
+  await authFetch(`/admin/api/leads/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status, notes }),
@@ -867,7 +890,7 @@ async function saveLead(e, id) {
 async function deleteLead(e, id) {
   e.stopPropagation();
   if (!confirm('Delete this lead permanently?')) return;
-  await fetch(`/admin/api/leads/${id}`, { method: 'DELETE' });
+  await authFetch(`/admin/api/leads/${id}`, { method: 'DELETE' });
   showToast('Lead deleted');
   loadLeads();
 }
@@ -886,7 +909,7 @@ setInterval(loadLeads, 60000);
 async function loadAnalytics() {
   const days = $('daysRange') ? $('daysRange').value : 30;
   try {
-    const res  = await fetch(`/admin/api/analytics?days=${days}`);
+    const res  = await authFetch(`/admin/api/analytics?days=${days}`);
     const data = await res.json();
     renderAnalytics(data);
   } catch { /* silent */ }

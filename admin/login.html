@@ -123,22 +123,47 @@
       Incorrect username or password. Please try again.
     </div>
 
-    <form method="POST" action="/admin/login">
+    <form id="loginForm">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" placeholder="admin" autocomplete="username" required />
 
       <label for="password">Password</label>
       <input type="password" id="password" name="password" placeholder="••••••••••" autocomplete="current-password" required />
 
-      <button type="submit">Sign In</button>
+      <button type="submit" id="submitBtn">Sign In</button>
     </form>
     <a href="/" class="back">← Back to website</a>
   </div>
 
   <script>
-    if (new URLSearchParams(location.search).get('error')) {
-      document.getElementById('errorBanner').classList.add('show');
-    }
+    // If already logged in, go straight to dashboard
+    if (localStorage.getItem('admin_token')) location.href = '/admin';
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.textContent = 'Signing in…';
+      btn.disabled = true;
+
+      const res = await fetch('/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('username').value,
+          password: document.getElementById('password').value,
+        }),
+      });
+
+      if (res.ok) {
+        const { token } = await res.json();
+        localStorage.setItem('admin_token', token);
+        location.href = '/admin';
+      } else {
+        document.getElementById('errorBanner').classList.add('show');
+        btn.textContent = 'Sign In';
+        btn.disabled = false;
+      }
+    });
   </script>
 </body>
 </html>

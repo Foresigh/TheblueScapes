@@ -1,27 +1,48 @@
 const express = require('express');
+const crypto  = require('crypto');
 const path    = require('path');
 const db      = require('./db/setup');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-const ADMIN_USER = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'bluescapes2025';
+const ADMIN_USER   = process.env.ADMIN_USERNAME || 'admin';
+const ADMIN_PASS   = process.env.ADMIN_PASSWORD || 'bluescapes2025';
+const TOKEN_SECRET = process.env.SESSION_SECRET || 'dev-secret-change-me';
+
+// ── Token helpers ─────────────────────────────────────────
+// Token is valid for 8-hour windows — no storage needed
+function makeToken() {
+  const window = Math.floor(Date.now() / (8 * 60 * 60 * 1000));
+  return crypto
+    .createHmac('sha256', TOKEN_SECRET)
+    .update(`${ADMIN_USER}:${ADMIN_PASS}:${window}`)
+    .digest('hex');
+}
+
+function validToken(token) {
+  if (!token) return false;
+  const now  = Math.floor(Date.now() / (8 * 60 * 60 * 1000));
+  // Accept current window and the previous one (graceful expiry)
+  return [now, now - 1].some(w => {
+    const expected = crypto
+      .createHmac('sha256', TOKEN_SECRET)
+      .update(`${ADMIN_USER}:${ADMIN_PASS}:${w}`)
+      .digest('hex');
+    return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected));
+  });
+}
 
 // ── Middleware ────────────────────────────────────────────
 app.use(express.static(path.join(__dirname), { index: false, dotfiles: 'deny' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ── HTTP Basic Auth for /admin ────────────────────────────
 const requireAuth = (req, res, next) => {
-  const header = req.headers.authorization || '';
-  if (header.startsWith('Basic ')) {
-    const [user, pass] = Buffer.from(header.slice(6), 'base64').toString().split(':');
-    if (user === ADMIN_USER && pass === ADMIN_PASS) return next();
-  }
-  res.setHeader('WWW-Authenticate', 'Basic realm="BlueScapes Admin"');
-  res.status(401).send('Login required');
+  const auth  = req.headers.authorization || '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+  if (validToken(token)) return next();
+  res.status(401).json({ error: 'Unauthorized' });
 };
 
 // ── Landing Page ──────────────────────────────────────────
@@ -66,12 +87,26 @@ app.post('/api/event', async (req, res) => {
   res.json({ ok: true });
 });
 
-// ── Admin: Dashboard ──────────────────────────────────────
-app.get('/admin', requireAuth, (req, res) =>
+// ── Admin: Login page (public) ────────────────────────────
+app.get('/admin/login', (req, res) =>
+  res.sendFile(path.join(__dirname, 'admin', 'login.html'))
+);
+
+// ── Admin: Login API ──────────────────────────────────────
+app.post('/admin/login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === ADMIN_USER && password === ADMIN_PASS) {
+    return res.json({ token: makeToken() });
+  }
+  res.status(401).json({ error: 'Invalid credentials' });
+});
+
+// ── Admin: Dashboard (public shell, JS checks token) ──────
+app.get('/admin', (req, res) =>
   res.sendFile(path.join(__dirname, 'admin', 'dashboard.html'))
 );
 
-// ── Admin: Leads API ──────────────────────────────────────
+// ── Admin: Protected API ──────────────────────────────────
 app.get('/admin/api/leads', requireAuth, async (req, res) => {
   const { status, project, search } = req.query;
   const [leads, stats] = await Promise.all([
