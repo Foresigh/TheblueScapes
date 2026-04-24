@@ -742,6 +742,7 @@ function showView(name) {
   $(`view-${name}`).style.display = 'block';
   document.querySelectorAll('.sidebar__item').forEach(el => el.classList.remove('active'));
   $('viewTitle').textContent = name === 'leads' ? 'Leads' : 'Analytics';
+  if (name === 'analytics') loadAnalytics();
 }
 
 // ── Load data ─────────────────────────────────────────────
@@ -997,12 +998,7 @@ function renderAnalytics(d) {
     : `<tr><td colspan="3" style="text-align:center;padding:30px;color:var(--text-light)">No events yet — visit your website to start tracking</td></tr>`;
 }
 
-// ── View switching (patch to also load analytics) ─────────
-const _origShowView = showView;
-function showView(name) {
-  _origShowView(name);
-  if (name === 'analytics') loadAnalytics();
-}
+
 </script>
 </body>
 </html>
