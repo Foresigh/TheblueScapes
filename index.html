@@ -1035,19 +1035,19 @@
     <div class="container">
       <div class="trust-bar__inner">
         <div class="trust-bar__item">
-          <div class="trust-bar__number">60+</div>
+          <div class="trust-bar__number" data-count="60" data-suffix="+">60+</div>
           <div class="trust-bar__label">Years Combined Experience</div>
         </div>
         <div class="trust-bar__item">
-          <div class="trust-bar__number">500+</div>
+          <div class="trust-bar__number" data-count="11" data-suffix="+">11+</div>
           <div class="trust-bar__label">Pools Completed</div>
         </div>
         <div class="trust-bar__item">
-          <div class="trust-bar__number">5★</div>
+          <div class="trust-bar__number" data-count="5" data-suffix="★">5★</div>
           <div class="trust-bar__label">Average Rating</div>
         </div>
         <div class="trust-bar__item">
-          <div class="trust-bar__number">100%</div>
+          <div class="trust-bar__number" data-count="100" data-suffix="%">100%</div>
           <div class="trust-bar__label">Client Satisfaction</div>
         </div>
         <div class="trust-bar__item">
@@ -1160,7 +1160,7 @@
         <div class="benefits__visual reveal">
           <div class="benefits__img-wrap"></div>
           <div class="benefits__badge">
-            <div class="benefits__badge-num">60<span>+</span></div>
+            <div class="benefits__badge-num" data-count="60"><span class="count-num">60</span><span>+</span></div>
             <div class="benefits__badge-text">Years Combined<br/>Team Experience</div>
           </div>
         </div>
@@ -1511,6 +1511,39 @@
       });
     }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // ── Count-Up Animation ───────────────────────────────
+    function animateCount(el) {
+      const target   = parseInt(el.dataset.count, 10);
+      const suffix   = el.dataset.suffix || '';
+      const numSpan  = el.querySelector('.count-num'); // for badge (preserves inner spans)
+      const duration = target <= 15 ? 700 : target <= 60 ? 1200 : 1500;
+      const startTime = performance.now();
+
+      function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+      (function tick(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const value    = Math.round(easeOutCubic(progress) * target);
+        if (numSpan) numSpan.textContent = value;
+        else         el.textContent      = value + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+        else {
+          if (numSpan) numSpan.textContent = target;
+          else         el.textContent      = target + suffix;
+        }
+      })(startTime);
+    }
+
+    const countObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          animateCount(e.target);
+          countObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-count]').forEach(el => countObserver.observe(el));
 
     // ── Smooth Scroll ─────────────────────────────────────
     document.querySelectorAll('a[href^="#"]').forEach(a => {
