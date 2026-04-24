@@ -31,36 +31,41 @@ const requireAuth = (req, res, next) =>
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
 // ── Public: Lead Capture ──────────────────────────────────
-app.post('/api/contact', (req, res) => {
+app.post('/api/contact', async (req, res) => {
   const { first_name, last_name, email, phone, project_type, message,
           utm_source, utm_medium, utm_campaign } = req.body;
 
-  if (!first_name || !email || !phone) {
+  if (!first_name || !email || !phone)
     return res.status(400).json({ error: 'Missing required fields' });
+
+  try {
+    const lead = await db.insertLead({
+      first_name:   first_name.trim(),
+      last_name:    (last_name || '').trim(),
+      email:        email.trim().toLowerCase(),
+      phone:        phone.trim(),
+      project_type: project_type || '',
+      message:      (message || '').trim(),
+      utm_source:   utm_source   || '',
+      utm_medium:   utm_medium   || '',
+      utm_campaign: utm_campaign || '',
+      ip_address:   req.ip       || '',
+      referrer:     req.get('referer') || '',
+    });
+    res.json({ success: true, id: lead.id });
+  } catch (err) {
+    console.error('insertLead error:', err.message);
+    res.status(500).json({ error: 'Could not save lead' });
   }
-
-  const lead = db.insertLead({
-    first_name:   first_name.trim(),
-    last_name:    (last_name || '').trim(),
-    email:        email.trim().toLowerCase(),
-    phone:        phone.trim(),
-    project_type: project_type || '',
-    message:      (message || '').trim(),
-    utm_source:   utm_source   || '',
-    utm_medium:   utm_medium   || '',
-    utm_campaign: utm_campaign || '',
-    ip_address:   req.ip       || '',
-    referrer:     req.get('referer') || '',
-  });
-
-  res.json({ success: true, id: lead.id });
 });
 
 // ── Public: Event Ping ────────────────────────────────────
-app.post('/api/event', (req, res) => {
+app.post('/api/event', async (req, res) => {
   const { event, page, data } = req.body;
   if (!event) return res.status(400).json({ error: 'Missing event' });
-  db.insertEvent({ event, page: page || '', data: JSON.stringify(data || {}), ip: req.ip || '' });
+  try {
+    await db.insertEvent({ event, page: page || '', data: data || {}, ip: req.ip || '' });
+  } catch { /* never block the page for analytics */ }
   res.json({ ok: true });
 });
 
@@ -87,31 +92,32 @@ app.get('/admin', requireAuth, (req, res) =>
 );
 
 // ── Admin: Leads API ──────────────────────────────────────
-app.get('/admin/api/leads', requireAuth, (req, res) => {
+app.get('/admin/api/leads', requireAuth, async (req, res) => {
   const { status, project, search } = req.query;
-  const leads = db.queryLeads({ status, project, search });
-  const stats = db.getStats();
+  const [leads, stats] = await Promise.all([
+    db.queryLeads({ status, project, search }),
+    db.getStats(),
+  ]);
   res.json({ leads, total: leads.length, stats });
 });
 
-app.patch('/admin/api/leads/:id', requireAuth, (req, res) => {
-  const { status, notes } = req.body;
-  db.updateLead(req.params.id, { status, notes });
+app.patch('/admin/api/leads/:id', requireAuth, async (req, res) => {
+  await db.updateLead(req.params.id, req.body);
   res.json({ success: true });
 });
 
-app.delete('/admin/api/leads/:id', requireAuth, (req, res) => {
-  db.deleteLead(req.params.id);
+app.delete('/admin/api/leads/:id', requireAuth, async (req, res) => {
+  await db.deleteLead(req.params.id);
   res.json({ success: true });
 });
 
-app.get('/admin/api/analytics', requireAuth, (req, res) => {
+app.get('/admin/api/analytics', requireAuth, async (req, res) => {
   const days = parseInt(req.query.days) || 30;
-  res.json(db.getAnalytics(days));
+  res.json(await db.getAnalytics(days));
 });
 
-app.get('/admin/api/export', requireAuth, (req, res) => {
-  const leads = db.queryLeads();
+app.get('/admin/api/export', requireAuth, async (req, res) => {
+  const leads = await db.queryLeads();
   const cols  = ['id','created_at','first_name','last_name','email','phone',
                   'project_type','status','utm_source','utm_medium','utm_campaign',
                   'referrer','message','notes'];
@@ -127,4 +133,7 @@ app.get('/admin/api/export', requireAuth, (req, res) => {
 // ── Fallback ──────────────────────────────────────────────
 app.get('*', (req, res) => res.redirect('/'));
 
-app.listen(PORT, () => console.log(`BlueScapes running on port ${PORT}`));
+// ── Start ─────────────────────────────────────────────────
+db.init()
+  .then(() => app.listen(PORT, () => console.log(`BlueScapes running on port ${PORT}`)))
+  .catch(err => { console.error('DB init failed:', err.message); process.exit(1); });
