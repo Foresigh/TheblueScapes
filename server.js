@@ -134,6 +134,11 @@ app.get('/admin/api/export', requireAuth, async (req, res) => {
 app.get('*', (req, res) => res.redirect('/'));
 
 // ── Start ─────────────────────────────────────────────────
+if (!process.env.DATABASE_URL) {
+  console.error('ERROR: DATABASE_URL environment variable is not set.');
+  process.exit(1);
+}
+
 db.init()
   .then(() => app.listen(PORT, () => console.log(`BlueScapes running on port ${PORT}`)))
   .catch(err => { console.error('DB init failed:', err.message); process.exit(1); });
