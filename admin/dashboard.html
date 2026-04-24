@@ -909,19 +909,23 @@ setInterval(loadLeads, 60000);
 // ── Analytics ─────────────────────────────────────────────
 async function loadAnalytics() {
   const days = $('daysRange') ? $('daysRange').value : 30;
-  try {
-    const res  = await authFetch(`/admin/api/analytics?days=${days}`);
-    const data = await res.json();
-    renderAnalytics(data);
-  } catch { /* silent */ }
+  const res  = await authFetch(`/admin/api/analytics?days=${days}`);
+  const data = await res.json();
+  if (data.error) {
+    ['chartWrap','funnelWrap','topCTAs','topSections','eventsTable'].forEach(id => {
+      const el = $(id); if (el) el.innerHTML = `<p style="color:var(--red);font-size:13px">Error: ${data.error}</p>`;
+    });
+    return;
+  }
+  renderAnalytics(data);
 }
 
 function renderAnalytics(d) {
   // Stat cards
-  $('aPageViews').textContent  = d.pageViews;
-  $('aUnique').textContent     = d.uniqueIPs;
-  $('aFormStarts').textContent = d.formStarts;
-  $('aConvRate').textContent   = d.convRate + '%';
+  $('aPageViews').textContent  = d.pageViews  ?? 0;
+  $('aUnique').textContent     = d.uniqueIPs  ?? 0;
+  $('aFormStarts').textContent = d.formStarts ?? 0;
+  $('aConvRate').textContent   = (d.convRate  ?? '0.0') + '%';
 
   // Daily chart
   const maxViews = Math.max(...d.daily.map(x => x.views), 1);

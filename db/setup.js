@@ -31,9 +31,20 @@ async function init() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       event      TEXT NOT NULL,
       page       TEXT DEFAULT '',
-      data       TEXT DEFAULT '',
+      data       JSONB DEFAULT '{}',
       ip         TEXT DEFAULT ''
     );
+
+    -- Migrate existing TEXT data column to JSONB if needed
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name='events' AND column_name='data' AND data_type='text'
+      ) THEN
+        ALTER TABLE events ALTER COLUMN data TYPE JSONB USING data::jsonb;
+      END IF;
+    END $$;
   `);
 }
 
@@ -128,7 +139,7 @@ async function getAnalytics(days = 30) {
       FROM events
       WHERE event = 'cta_click'
         AND created_at >= NOW() - $1::INTERVAL
-        AND data->>'cta_text' IS NOT NULL
+        AND data IS NOT NULL AND data->>'cta_text' IS NOT NULL
       GROUP BY label ORDER BY n DESC LIMIT 5`, [interval]),
 
     // Top sections
@@ -137,7 +148,7 @@ async function getAnalytics(days = 30) {
       FROM events
       WHERE event = 'section_view'
         AND created_at >= NOW() - $1::INTERVAL
-        AND data->>'section' IS NOT NULL
+        AND data IS NOT NULL AND data->>'section' IS NOT NULL
       GROUP BY section ORDER BY n DESC`, [interval]),
   ]);
 
@@ -161,13 +172,12 @@ async function getAnalytics(days = 30) {
 
 // ── Events ────────────────────────────────────────────────
 async function insertEvent({ event, page, data, ip }) {
-  // Store data as JSONB — parse if it's a string
   let jsonData;
   try { jsonData = typeof data === 'string' ? JSON.parse(data) : (data || {}); }
   catch { jsonData = {}; }
   await pool.query(
     'INSERT INTO events (event, page, data, ip) VALUES ($1,$2,$3,$4)',
-    [event, page, JSON.stringify(jsonData), ip]
+    [event, page, jsonData, ip]
   );
 }
 
