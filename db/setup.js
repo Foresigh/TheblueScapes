@@ -31,20 +31,9 @@ async function init() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       event      TEXT NOT NULL,
       page       TEXT DEFAULT '',
-      data       JSONB DEFAULT '{}',
+      data       TEXT DEFAULT '{}',
       ip         TEXT DEFAULT ''
     );
-
-    -- Migrate existing TEXT data column to JSONB if needed
-    DO $$
-    BEGIN
-      IF EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_name='events' AND column_name='data' AND data_type='text'
-      ) THEN
-        ALTER TABLE events ALTER COLUMN data TYPE JSONB USING data::jsonb;
-      END IF;
-    END $$;
   `);
 }
 
@@ -133,22 +122,24 @@ async function getAnalytics(days = 30) {
     // All event counts
     pool.query(`SELECT event, COUNT(*)::int n FROM events WHERE created_at >= NOW() - $1::INTERVAL GROUP BY event ORDER BY n DESC`, [interval]),
 
-    // Top CTAs
+    // Top CTAs — cast TEXT→JSONB safely
     pool.query(`
-      SELECT data->>'cta_text' label, COUNT(*)::int n
+      SELECT (data::jsonb)->>'cta_text' label, COUNT(*)::int n
       FROM events
       WHERE event = 'cta_click'
         AND created_at >= NOW() - $1::INTERVAL
-        AND data IS NOT NULL AND data->>'cta_text' IS NOT NULL
+        AND data IS NOT NULL AND data <> '' AND data <> '{}'
+        AND (data::jsonb)->>'cta_text' IS NOT NULL
       GROUP BY label ORDER BY n DESC LIMIT 5`, [interval]),
 
-    // Top sections
+    // Top sections — cast TEXT→JSONB safely
     pool.query(`
-      SELECT data->>'section' section, COUNT(*)::int n
+      SELECT (data::jsonb)->>'section' section, COUNT(*)::int n
       FROM events
       WHERE event = 'section_view'
         AND created_at >= NOW() - $1::INTERVAL
-        AND data IS NOT NULL AND data->>'section' IS NOT NULL
+        AND data IS NOT NULL AND data <> '' AND data <> '{}'
+        AND (data::jsonb)->>'section' IS NOT NULL
       GROUP BY section ORDER BY n DESC`, [interval]),
   ]);
 
