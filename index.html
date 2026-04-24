@@ -6,18 +6,6 @@
   <title>BlueScapes | Custom Pools & Luxury Outdoor Living – Utah</title>
   <meta name="description" content="Utah pool builders with 60+ years of combined team expertise. Custom pools, luxury spas, swim spas & backyard transformations. Get your free quote today." />
 
-  <!-- Google Analytics GA4 — replace G-XXXXXXXXXX with your Measurement ID -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX', {
-      send_page_view: true,
-      cookie_flags: 'SameSite=None;Secure',
-    });
-  </script>
-
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1438,18 +1426,17 @@
       };
     })();
 
-    // ── GA4 Event Helper ──────────────────────────────────
+    // ── Event Tracker (built-in, no external service needed) ──
     function track(eventName, params = {}) {
-      if (typeof gtag === 'function') {
-        gtag('event', eventName, { ...utmParams, ...params });
-      }
-      // Also ping our own server for source-of-truth reporting
       fetch('/api/event', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ event: eventName, page: location.pathname, data: params }),
+        body: JSON.stringify({ event: eventName, page: location.pathname, data: { ...utmParams, ...params } }),
       }).catch(() => {});
     }
+
+    // Track page view immediately
+    track('page_view', { referrer: document.referrer || 'direct' });
 
     // ── CTA Button Clicks ─────────────────────────────────
     document.querySelectorAll('.btn--primary, .btn--outline, .btn--dark').forEach(btn => {

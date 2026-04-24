@@ -106,4 +106,68 @@ function insertEvent(fields) {
   save();
 }
 
-module.exports = { insertLead, queryLeads, updateLead, deleteLead, getStats, insertEvent };
+function getAnalytics(days = 30) {
+  const events   = load().events;
+  const leads    = load().leads;
+  const cutoff   = new Date(Date.now() - days * 86400000).toISOString();
+  const recent   = events.filter(e => e.created_at >= cutoff);
+
+  // Daily page views for chart (last `days` days)
+  const dailyMap = {};
+  for (let i = 0; i < days; i++) {
+    const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+    dailyMap[d] = 0;
+  }
+  recent.filter(e => e.event === 'page_view')
+    .forEach(e => { const d = e.created_at.slice(0, 10); if (d in dailyMap) dailyMap[d]++; });
+  const daily = Object.entries(dailyMap)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, views]) => ({ date, views }));
+
+  // Unique visitors by IP
+  const uniqueIPs    = new Set(recent.filter(e => e.event === 'page_view').map(e => e.ip)).size;
+  const pageViews    = recent.filter(e => e.event === 'page_view').length;
+  const formStarts   = recent.filter(e => e.event === 'form_start').length;
+  const leadsInRange = leads.filter(l => l.created_at >= cutoff).length;
+
+  // Event breakdown
+  const eventCounts = {};
+  recent.forEach(e => { eventCounts[e.event] = (eventCounts[e.event] || 0) + 1; });
+  const topEvents = Object.entries(eventCounts)
+    .map(([event, n]) => ({ event, n }))
+    .sort((a, b) => b.n - a.n);
+
+  // Top CTAs clicked
+  const ctaMap = {};
+  recent.filter(e => e.event === 'cta_click').forEach(e => {
+    try {
+      const d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+      const label = d.cta_text || 'unknown';
+      ctaMap[label] = (ctaMap[label] || 0) + 1;
+    } catch {}
+  });
+  const topCTAs = Object.entries(ctaMap)
+    .map(([label, n]) => ({ label, n }))
+    .sort((a, b) => b.n - a.n)
+    .slice(0, 5);
+
+  // Top sections viewed
+  const sectionMap = {};
+  recent.filter(e => e.event === 'section_view').forEach(e => {
+    try {
+      const d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+      const s = d.section || 'unknown';
+      sectionMap[s] = (sectionMap[s] || 0) + 1;
+    } catch {}
+  });
+  const topSections = Object.entries(sectionMap)
+    .map(([section, n]) => ({ section, n }))
+    .sort((a, b) => b.n - a.n);
+
+  // Conversion rate
+  const convRate = pageViews > 0 ? ((leadsInRange / pageViews) * 100).toFixed(1) : '0.0';
+
+  return { pageViews, uniqueIPs, formStarts, leadsInRange, convRate, daily, topEvents, topCTAs, topSections, days };
+}
+
+module.exports = { insertLead, queryLeads, updateLead, deleteLead, getStats, insertEvent, getAnalytics };

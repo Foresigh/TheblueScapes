@@ -105,6 +105,11 @@ app.delete('/admin/api/leads/:id', requireAuth, (req, res) => {
   res.json({ success: true });
 });
 
+app.get('/admin/api/analytics', requireAuth, (req, res) => {
+  const days = parseInt(req.query.days) || 30;
+  res.json(db.getAnalytics(days));
+});
+
 app.get('/admin/api/export', requireAuth, (req, res) => {
   const leads = db.queryLeads();
   const cols  = ['id','created_at','first_name','last_name','email','phone',

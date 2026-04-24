@@ -586,20 +586,93 @@
 
       <!-- ══ ANALYTICS VIEW ══ -->
       <div id="view-analytics" style="display:none;">
-        <div class="panel" style="max-width:700px;">
-          <div class="panel__title">Google Analytics</div>
-          <p style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:18px;">
-            GA4 is embedded on your landing page. To view full analytics:
-          </p>
-          <a href="https://analytics.google.com" target="_blank" class="btn-export" style="display:inline-flex;margin-bottom:16px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Open Google Analytics
-          </a>
-          <p style="font-size:13px;color:var(--text-light);">
-            Events tracked: <strong>page_view</strong>, <strong>generate_lead</strong> (form submit), <strong>cta_click</strong>, <strong>phone_click</strong>, <strong>form_start</strong>
-          </p>
+
+        <!-- Range picker -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+          <span style="font-size:13px;font-weight:600;color:var(--text-mid);">Show last</span>
+          <select class="filter-select" id="daysRange" onchange="loadAnalytics()">
+            <option value="7">7 days</option>
+            <option value="30" selected>30 days</option>
+            <option value="90">90 days</option>
+          </select>
         </div>
-      </div>
+
+        <!-- Top stat cards -->
+        <div class="stats-grid" style="margin-bottom:20px;">
+          <div class="stat-card">
+            <div class="stat-card__icon" style="background:rgba(0,174,239,0.10);">👁️</div>
+            <div class="stat-card__num" id="aPageViews">—</div>
+            <div class="stat-card__label">Page Views</div>
+            <div class="stat-card__bar" style="background:linear-gradient(90deg,var(--cyan-dark),var(--cyan-light))"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon" style="background:rgba(139,92,246,0.10);">🧑</div>
+            <div class="stat-card__num" id="aUnique">—</div>
+            <div class="stat-card__label">Unique Visitors</div>
+            <div class="stat-card__bar" style="background:linear-gradient(90deg,#7c3aed,#8b5cf6)"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon" style="background:rgba(245,158,11,0.10);">📝</div>
+            <div class="stat-card__num" id="aFormStarts">—</div>
+            <div class="stat-card__label">Form Starts</div>
+            <div class="stat-card__bar" style="background:linear-gradient(90deg,#d97706,#f59e0b)"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon" style="background:rgba(16,185,129,0.10);">📈</div>
+            <div class="stat-card__num" id="aConvRate">—</div>
+            <div class="stat-card__label">Conversion Rate</div>
+            <div class="stat-card__bar" style="background:linear-gradient(90deg,#059669,#10b981)"></div>
+          </div>
+        </div>
+
+        <!-- Page views chart + funnel -->
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px;">
+
+          <div class="panel">
+            <div class="panel__title">Daily Page Views</div>
+            <div id="chartWrap" style="display:flex;align-items:flex-end;gap:4px;height:120px;padding-top:8px;overflow:hidden;">
+              <div class="spinner"></div>
+            </div>
+            <div id="chartLabels" style="display:flex;gap:4px;margin-top:6px;overflow:hidden;"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel__title">Conversion Funnel</div>
+            <div id="funnelWrap" style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+              <div class="spinner"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- CTAs + Sections -->
+        <div class="breakdown-row" style="margin-bottom:16px;">
+          <div class="panel">
+            <div class="panel__title">Top Buttons Clicked</div>
+            <div id="topCTAs"><div class="spinner"></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel__title">Sections Engaged</div>
+            <div id="topSections"><div class="spinner"></div></div>
+          </div>
+        </div>
+
+        <!-- All events table -->
+        <div class="panel">
+          <div class="panel__title" style="margin-bottom:14px;">All Events</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Event</th><th>Count</th><th>% of Total</th></tr>
+              </thead>
+              <tbody id="eventsTable">
+                <tr><td colspan="3" style="text-align:center;padding:30px;"><div class="spinner" style="margin:0 auto"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /view-analytics -->
 
     </div><!-- /content -->
   </div><!-- /main -->
@@ -808,6 +881,105 @@ $('projectFilter').addEventListener('change', loadLeads);
 // ── Auto-refresh every 60s ────────────────────────────────
 loadLeads();
 setInterval(loadLeads, 60000);
+
+// ── Analytics ─────────────────────────────────────────────
+async function loadAnalytics() {
+  const days = $('daysRange') ? $('daysRange').value : 30;
+  try {
+    const res  = await fetch(`/admin/api/analytics?days=${days}`);
+    const data = await res.json();
+    renderAnalytics(data);
+  } catch { /* silent */ }
+}
+
+function renderAnalytics(d) {
+  // Stat cards
+  $('aPageViews').textContent  = d.pageViews;
+  $('aUnique').textContent     = d.uniqueIPs;
+  $('aFormStarts').textContent = d.formStarts;
+  $('aConvRate').textContent   = d.convRate + '%';
+
+  // Daily chart
+  const maxViews = Math.max(...d.daily.map(x => x.views), 1);
+  const showEvery = d.days <= 7 ? 1 : d.days <= 30 ? 5 : 15;
+  $('chartWrap').innerHTML = d.daily.map(x => `
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;">
+      <div style="font-size:9px;color:var(--text-light);line-height:1">${x.views || ''}</div>
+      <div style="width:100%;background:${x.views > 0 ? 'linear-gradient(to top,var(--cyan-dark),var(--cyan-light))' : 'rgba(0,174,239,0.08)'};
+                  border-radius:3px 3px 0 0;height:${Math.max(x.views/maxViews*100,2)}%;min-height:3px;transition:height .4s ease">
+      </div>
+    </div>`).join('');
+  $('chartLabels').innerHTML = d.daily.map((x, i) => `
+    <div style="flex:1;text-align:center;font-size:9px;color:var(--text-light);min-width:0;overflow:hidden;white-space:nowrap;">
+      ${(i % showEvery === 0) ? x.date.slice(5) : ''}
+    </div>`).join('');
+
+  // Funnel
+  const steps = [
+    { label: 'Page Views',  n: d.pageViews,    color: 'var(--cyan-dark)' },
+    { label: 'Form Starts', n: d.formStarts,   color: 'var(--yellow)'   },
+    { label: 'Leads',       n: d.leadsInRange, color: 'var(--green)'    },
+  ];
+  const fMax = Math.max(steps[0].n, 1);
+  $('funnelWrap').innerHTML = steps.map(s => `
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+        <span style="font-weight:500;color:var(--text)">${s.label}</span>
+        <span style="font-weight:700;color:var(--text)">${s.n}</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${Math.round(s.n/fMax*100)}%;background:${s.color}"></div>
+      </div>
+    </div>`).join('');
+
+  // Top CTAs
+  const ctaMax = Math.max(...(d.topCTAs || []).map(x => x.n), 1);
+  $('topCTAs').innerHTML = d.topCTAs.length
+    ? d.topCTAs.map(x => `
+        <div class="bar-item">
+          <div class="bar-item__top">
+            <span class="bar-item__name" style="font-size:12px;max-width:160px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${x.label}</span>
+            <span class="bar-item__count">${x.n}</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.round(x.n/ctaMax*100)}%"></div></div>
+        </div>`).join('')
+    : '<p style="font-size:13px;color:var(--text-light)">No clicks yet</p>';
+
+  // Top Sections
+  const secMax = Math.max(...(d.topSections || []).map(x => x.n), 1);
+  $('topSections').innerHTML = d.topSections.length
+    ? d.topSections.map(x => `
+        <div class="source-item">
+          <span class="source-item__name">#${x.section}</span>
+          <span class="source-badge" style="background:rgba(0,174,239,0.10);color:var(--cyan-dark)">${x.n}</span>
+        </div>`).join('')
+    : '<p style="font-size:13px;color:var(--text-light)">No section data yet</p>';
+
+  // Events table
+  const totalEvents = d.topEvents.reduce((s, e) => s + e.n, 0) || 1;
+  $('eventsTable').innerHTML = d.topEvents.length
+    ? d.topEvents.map(e => `
+        <tr>
+          <td style="font-weight:500">${e.event}</td>
+          <td style="font-weight:700;color:var(--cyan-dark)">${e.n}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="bar-track" style="width:80px;flex-shrink:0">
+                <div class="bar-fill" style="width:${Math.round(e.n/totalEvents*100)}%"></div>
+              </div>
+              <span style="font-size:12px;color:var(--text-light)">${Math.round(e.n/totalEvents*100)}%</span>
+            </div>
+          </td>
+        </tr>`).join('')
+    : `<tr><td colspan="3" style="text-align:center;padding:30px;color:var(--text-light)">No events yet — visit your website to start tracking</td></tr>`;
+}
+
+// ── View switching (patch to also load analytics) ─────────
+const _origShowView = showView;
+function showView(name) {
+  _origShowView(name);
+  if (name === 'analytics') loadAnalytics();
+}
 </script>
 </body>
 </html>
