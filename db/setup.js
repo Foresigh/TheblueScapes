@@ -172,4 +172,16 @@ async function insertEvent({ event, page, data, ip }) {
   );
 }
 
-module.exports = { init, insertLead, queryLeads, updateLead, deleteLead, getStats, getAnalytics, insertEvent };
+// ── Geo ───────────────────────────────────────────────────
+async function getTopIPs(days = 30) {
+  const { rows } = await pool.query(
+    `SELECT ip, COUNT(*)::int n FROM events
+     WHERE created_at >= NOW() - $1::INTERVAL
+       AND ip IS NOT NULL AND ip <> '' AND ip <> '::1' AND ip <> '127.0.0.1'
+     GROUP BY ip ORDER BY n DESC LIMIT 200`,
+    [`${days} days`]
+  );
+  return rows;
+}
+
+module.exports = { init, insertLead, queryLeads, updateLead, deleteLead, getStats, getAnalytics, insertEvent, getTopIPs };

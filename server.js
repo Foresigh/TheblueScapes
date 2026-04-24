@@ -1,6 +1,7 @@
 const express = require('express');
 const crypto  = require('crypto');
 const path    = require('path');
+const geoip   = require('geoip-lite');
 const db      = require('./db/setup');
 
 const app  = express();
@@ -34,6 +35,7 @@ function validToken(token) {
 }
 
 // ── Middleware ────────────────────────────────────────────
+app.set('trust proxy', 1);
 app.use(express.static(path.join(__dirname), { index: false, dotfiles: 'deny' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -128,7 +130,25 @@ app.delete('/admin/api/leads/:id', requireAuth, async (req, res) => {
 
 app.get('/admin/api/analytics', requireAuth, async (req, res) => {
   const days = parseInt(req.query.days) || 30;
-  res.json(await db.getAnalytics(days));
+  const [analytics, ipRows] = await Promise.all([
+    db.getAnalytics(days),
+    db.getTopIPs(days),
+  ]);
+
+  const locationMap = {};
+  for (const { ip, n } of ipRows) {
+    const geo = geoip.lookup(ip);
+    if (!geo?.country) continue;
+    const label = [geo.city, geo.region, geo.country].filter(Boolean).join(', ');
+    if (!locationMap[label]) locationMap[label] = { n: 0, country: geo.country };
+    locationMap[label].n += n;
+  }
+  const topLocations = Object.entries(locationMap)
+    .sort(([, a], [, b]) => b.n - a.n)
+    .slice(0, 10)
+    .map(([location, { n, country }]) => ({ location, n, country }));
+
+  res.json({ ...analytics, topLocations });
 });
 
 app.get('/admin/api/export', requireAuth, async (req, res) => {

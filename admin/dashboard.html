@@ -428,6 +428,26 @@
     .toast.success { border-left: 3px solid var(--green); }
     .toast.error   { border-left: 3px solid var(--red); }
 
+    /* ── Analytics extras ── */
+    .stat-card__desc { font-size:11px; color:var(--text-light); margin-top:4px; line-height:1.45; }
+    .panel__desc { font-size:12px; color:var(--text-light); margin:-10px 0 14px; line-height:1.5; }
+    .insight-box {
+      background:rgba(0,174,239,0.06); border:1px solid rgba(0,174,239,0.15);
+      border-radius:8px; padding:10px 14px; font-size:12px; color:var(--text-mid);
+      margin-top:14px; line-height:1.6;
+    }
+    .funnel-pct { font-size:11px; color:var(--text-light); text-align:right; margin-top:2px; }
+    .geo-item {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:8px 0; border-bottom:1px solid var(--border); font-size:13px;
+    }
+    .geo-item:last-child { border-bottom:none; }
+    .geo-item__left { display:flex; align-items:center; gap:9px; font-weight:500; color:var(--text); }
+    .geo-item__flag { font-size:18px; line-height:1; }
+    .geo-item__count { font-size:12px; font-weight:700; color:var(--cyan-dark); background:rgba(0,174,239,0.08); padding:2px 9px; border-radius:100px; }
+    .event-name { display:flex; align-items:center; gap:7px; }
+    .event-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
     /* ── Responsive ── */
     @media (max-width: 900px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -603,24 +623,28 @@
             <div class="stat-card__icon" style="background:rgba(0,174,239,0.10);">👁️</div>
             <div class="stat-card__num" id="aPageViews">—</div>
             <div class="stat-card__label">Page Views</div>
+            <div class="stat-card__desc">Total times your website was loaded in this period</div>
             <div class="stat-card__bar" style="background:linear-gradient(90deg,var(--cyan-dark),var(--cyan-light))"></div>
           </div>
           <div class="stat-card">
             <div class="stat-card__icon" style="background:rgba(139,92,246,0.10);">🧑</div>
             <div class="stat-card__num" id="aUnique">—</div>
             <div class="stat-card__label">Unique Visitors</div>
+            <div class="stat-card__desc">Estimated distinct people, counted by IP address</div>
             <div class="stat-card__bar" style="background:linear-gradient(90deg,#7c3aed,#8b5cf6)"></div>
           </div>
           <div class="stat-card">
             <div class="stat-card__icon" style="background:rgba(245,158,11,0.10);">📝</div>
             <div class="stat-card__num" id="aFormStarts">—</div>
             <div class="stat-card__label">Form Starts</div>
+            <div class="stat-card__desc">Visitors who began filling out the quote request form</div>
             <div class="stat-card__bar" style="background:linear-gradient(90deg,#d97706,#f59e0b)"></div>
           </div>
           <div class="stat-card">
             <div class="stat-card__icon" style="background:rgba(16,185,129,0.10);">📈</div>
             <div class="stat-card__num" id="aConvRate">—</div>
             <div class="stat-card__label">Conversion Rate</div>
+            <div class="stat-card__desc">Leads submitted ÷ page views. Good pool sites hit 2–5%</div>
             <div class="stat-card__bar" style="background:linear-gradient(90deg,#059669,#10b981)"></div>
           </div>
         </div>
@@ -630,6 +654,7 @@
 
           <div class="panel">
             <div class="panel__title">Daily Page Views</div>
+            <div class="panel__desc">How many times your site was loaded each day — hover a bar for the exact date</div>
             <div id="chartWrap" style="display:flex;align-items:flex-end;gap:4px;height:120px;padding-top:8px;overflow:hidden;">
               <div class="spinner"></div>
             </div>
@@ -638,21 +663,32 @@
 
           <div class="panel">
             <div class="panel__title">Conversion Funnel</div>
-            <div id="funnelWrap" style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+            <div class="panel__desc">How many visitors move from landing to becoming a lead</div>
+            <div id="funnelWrap" style="display:flex;flex-direction:column;gap:12px;margin-top:4px;">
               <div class="spinner"></div>
             </div>
+            <div class="insight-box" id="funnelInsight" style="margin-top:14px;"></div>
           </div>
 
+        </div>
+
+        <!-- Visitor Locations -->
+        <div class="panel" style="margin-bottom:16px;">
+          <div class="panel__title">Visitor Locations</div>
+          <div class="panel__desc">Where your website visitors are coming from, based on IP address lookup</div>
+          <div id="geoList"><div class="spinner"></div></div>
         </div>
 
         <!-- CTAs + Sections -->
         <div class="breakdown-row" style="margin-bottom:16px;">
           <div class="panel">
             <div class="panel__title">Top Buttons Clicked</div>
+            <div class="panel__desc">Which calls-to-action get the most engagement</div>
             <div id="topCTAs"><div class="spinner"></div></div>
           </div>
           <div class="panel">
-            <div class="panel__title">Sections Engaged</div>
+            <div class="panel__title">Sections Visitors Read</div>
+            <div class="panel__desc">Which parts of your page people scroll to and spend time on</div>
             <div id="topSections"><div class="spinner"></div></div>
           </div>
         </div>
@@ -920,18 +956,42 @@ async function loadAnalytics() {
   renderAnalytics(data);
 }
 
+const EVENT_LABELS = {
+  page_view:     { label: 'Page View',          desc: 'Someone loaded your website',             color: '#00AEEF' },
+  form_start:    { label: 'Form Started',        desc: 'Visitor began the quote request form',    color: '#f59e0b' },
+  generate_lead: { label: 'Lead Submitted',      desc: 'Completed form — a real quote request',  color: '#10b981' },
+  cta_click:     { label: 'Button Click',        desc: 'Clicked a call-to-action button',         color: '#8b5cf6' },
+  section_view:  { label: 'Section Viewed',      desc: 'Scrolled a section into view',            color: '#6B8BA4' },
+  phone_click:   { label: 'Phone Number Click',  desc: 'Tapped or clicked the phone number',     color: '#ef4444' },
+};
+
+const SECTION_LABELS = {
+  services:      'Services',
+  'why-us':      'Why BlueScapes',
+  portfolio:     'Portfolio / Our Work',
+  process:       'How It Works',
+  team:          'Meet the Team',
+  testimonials:  'Leave a Review',
+  contact:       'Contact Form',
+};
+
+function countryFlag(code) {
+  if (!code || code.length !== 2) return '🌍';
+  return String.fromCodePoint(...[...code.toUpperCase()].map(c => 0x1F1E6 - 65 + c.charCodeAt(0)));
+}
+
 function renderAnalytics(d) {
   // Stat cards
-  $('aPageViews').textContent  = d.pageViews  ?? 0;
-  $('aUnique').textContent     = d.uniqueIPs  ?? 0;
-  $('aFormStarts').textContent = d.formStarts ?? 0;
-  $('aConvRate').textContent   = (d.convRate  ?? '0.0') + '%';
+  $('aPageViews').textContent  = (d.pageViews  ?? 0).toLocaleString();
+  $('aUnique').textContent     = (d.uniqueIPs  ?? 0).toLocaleString();
+  $('aFormStarts').textContent = (d.formStarts ?? 0).toLocaleString();
+  $('aConvRate').textContent   = (d.convRate   ?? '0.0') + '%';
 
   // Daily chart
   const maxViews = Math.max(...d.daily.map(x => x.views), 1);
   const showEvery = d.days <= 7 ? 1 : d.days <= 30 ? 5 : 15;
   $('chartWrap').innerHTML = d.daily.map(x => `
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;" title="${x.date}: ${x.views} view${x.views !== 1 ? 's' : ''}">
       <div style="font-size:9px;color:var(--text-light);line-height:1">${x.views || ''}</div>
       <div style="width:100%;background:${x.views > 0 ? 'linear-gradient(to top,var(--cyan-dark),var(--cyan-light))' : 'rgba(0,174,239,0.08)'};
                   border-radius:3px 3px 0 0;height:${Math.max(x.views/maxViews*100,2)}%;min-height:3px;transition:height .4s ease">
@@ -942,54 +1002,91 @@ function renderAnalytics(d) {
       ${(i % showEvery === 0) ? x.date.slice(5) : ''}
     </div>`).join('');
 
-  // Funnel
-  const steps = [
-    { label: 'Page Views',  n: d.pageViews,    color: 'var(--cyan-dark)' },
-    { label: 'Form Starts', n: d.formStarts,   color: 'var(--yellow)'   },
-    { label: 'Leads',       n: d.leadsInRange, color: 'var(--green)'    },
+  // Funnel with drop-off %
+  const fSteps = [
+    { label: 'Visitors saw your page', sub: 'Page Views',  n: d.pageViews,    color: 'var(--cyan-dark)', prev: null },
+    { label: 'Started the quote form', sub: 'Form Starts', n: d.formStarts,   color: 'var(--yellow)',    prev: d.pageViews },
+    { label: 'Became a lead',          sub: 'Submitted',   n: d.leadsInRange, color: 'var(--green)',     prev: d.formStarts },
   ];
-  const fMax = Math.max(steps[0].n, 1);
-  $('funnelWrap').innerHTML = steps.map(s => `
+  const fMax = Math.max(fSteps[0].n, 1);
+  $('funnelWrap').innerHTML = fSteps.map(s => {
+    const pct = s.prev != null && s.prev > 0 ? Math.round(s.n / s.prev * 100) : null;
+    const drop = pct != null ? `<div class="funnel-pct">${pct}% of previous step</div>` : '';
+    return `
     <div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-        <span style="font-weight:500;color:var(--text)">${s.label}</span>
-        <span style="font-weight:700;color:var(--text)">${s.n}</span>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">
+        <span style="font-weight:600;color:var(--text)">${s.label}</span>
+        <span style="font-weight:700;color:var(--text)">${s.n.toLocaleString()}</span>
       </div>
+      <div style="font-size:11px;color:var(--text-light);margin-bottom:5px;">${s.sub}</div>
       <div class="bar-track">
         <div class="bar-fill" style="width:${Math.round(s.n/fMax*100)}%;background:${s.color}"></div>
       </div>
-    </div>`).join('');
+      ${drop}
+    </div>`;
+  }).join('');
+
+  // Insight callout under funnel
+  const insightEl = document.getElementById('funnelInsight');
+  if (insightEl) {
+    const convPct = d.convRate ?? '0.0';
+    const rating = parseFloat(convPct) >= 3 ? '🟢 Strong' : parseFloat(convPct) >= 1 ? '🟡 Average' : '🔴 Needs attention';
+    insightEl.innerHTML = `<strong>${rating}</strong> — ${convPct}% of visitors become leads. Pool &amp; home service sites typically convert at 1–3%. ${parseFloat(convPct) < 1 && d.pageViews > 20 ? 'Consider a more prominent CTA or faster page load.' : ''}`;
+  }
+
+  // Visitor Locations
+  const geo = d.topLocations || [];
+  $('geoList').innerHTML = geo.length
+    ? `<div>${geo.map(g => `
+        <div class="geo-item">
+          <div class="geo-item__left">
+            <span class="geo-item__flag">${countryFlag(g.country)}</span>
+            <span>${g.location}</span>
+          </div>
+          <span class="geo-item__count">${g.n} visit${g.n !== 1 ? 's' : ''}</span>
+        </div>`).join('')}</div>`
+    : '<p style="font-size:13px;color:var(--text-light);padding:8px 0;">No location data yet — visitors will appear here once your site gets traffic.</p>';
 
   // Top CTAs
   const ctaMax = Math.max(...(d.topCTAs || []).map(x => x.n), 1);
-  $('topCTAs').innerHTML = d.topCTAs.length
+  $('topCTAs').innerHTML = (d.topCTAs || []).length
     ? d.topCTAs.map(x => `
         <div class="bar-item">
           <div class="bar-item__top">
-            <span class="bar-item__name" style="font-size:12px;max-width:160px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${x.label}</span>
-            <span class="bar-item__count">${x.n}</span>
+            <span class="bar-item__name" style="font-size:12px;max-width:180px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis" title="${x.label}">${x.label}</span>
+            <span class="bar-item__count">${x.n} click${x.n !== 1 ? 's' : ''}</span>
           </div>
           <div class="bar-track"><div class="bar-fill" style="width:${Math.round(x.n/ctaMax*100)}%"></div></div>
         </div>`).join('')
-    : '<p style="font-size:13px;color:var(--text-light)">No clicks yet</p>';
+    : '<p style="font-size:13px;color:var(--text-light)">No button clicks recorded yet</p>';
 
   // Top Sections
   const secMax = Math.max(...(d.topSections || []).map(x => x.n), 1);
-  $('topSections').innerHTML = d.topSections.length
+  $('topSections').innerHTML = (d.topSections || []).length
     ? d.topSections.map(x => `
         <div class="source-item">
-          <span class="source-item__name">#${x.section}</span>
+          <span class="source-item__name">${SECTION_LABELS[x.section] || x.section}</span>
           <span class="source-badge" style="background:rgba(0,174,239,0.10);color:var(--cyan-dark)">${x.n}</span>
         </div>`).join('')
     : '<p style="font-size:13px;color:var(--text-light)">No section data yet</p>';
 
-  // Events table
+  // Events table with human-readable names
   const totalEvents = d.topEvents.reduce((s, e) => s + e.n, 0) || 1;
   $('eventsTable').innerHTML = d.topEvents.length
-    ? d.topEvents.map(e => `
+    ? d.topEvents.map(e => {
+        const meta = EVENT_LABELS[e.event] || { label: e.event, desc: '', color: '#6B8BA4' };
+        return `
         <tr>
-          <td style="font-weight:500">${e.event}</td>
-          <td style="font-weight:700;color:var(--cyan-dark)">${e.n}</td>
+          <td>
+            <div class="event-name">
+              <div class="event-dot" style="background:${meta.color}"></div>
+              <div>
+                <div style="font-weight:600;font-size:13px">${meta.label}</div>
+                <div style="font-size:11px;color:var(--text-light)">${meta.desc}</div>
+              </div>
+            </div>
+          </td>
+          <td style="font-weight:700;color:var(--cyan-dark)">${e.n.toLocaleString()}</td>
           <td>
             <div style="display:flex;align-items:center;gap:8px;">
               <div class="bar-track" style="width:80px;flex-shrink:0">
@@ -998,7 +1095,8 @@ function renderAnalytics(d) {
               <span style="font-size:12px;color:var(--text-light)">${Math.round(e.n/totalEvents*100)}%</span>
             </div>
           </td>
-        </tr>`).join('')
+        </tr>`;
+      }).join('')
     : `<tr><td colspan="3" style="text-align:center;padding:30px;color:var(--text-light)">No events yet — visit your website to start tracking</td></tr>`;
 }
 
