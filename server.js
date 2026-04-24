@@ -9,6 +9,9 @@ const PORT = process.env.PORT || 3000;
 const ADMIN_USER = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'bluescapes2025';
 
+// Trust Railway's reverse proxy so secure cookies work correctly
+app.set('trust proxy', 1);
+
 // ── Middleware ────────────────────────────────────────────
 app.use(express.static(path.join(__dirname), { index: false, dotfiles: 'deny' }));
 app.use(express.json());
@@ -18,7 +21,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: 'auto',
     httpOnly: true,
     maxAge: 8 * 60 * 60 * 1000,
   },
