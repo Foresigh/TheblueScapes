@@ -823,6 +823,51 @@
       .form-card { padding: 28px 22px; }
     }
 
+    /* ─── QUOTE FORM ENHANCED ──────────────────────────── */
+    .form-tabs {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      border: 1.5px solid rgba(10,35,66,0.13); border-radius: 10px;
+      overflow: hidden; margin-bottom: 24px;
+    }
+    .form-tab {
+      padding: 11px 4px; background: var(--offwhite);
+      border: none; border-right: 1px solid rgba(10,35,66,0.10);
+      font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700;
+      letter-spacing: .05em; text-transform: uppercase; color: var(--text-mid);
+      cursor: pointer; transition: all .2s; text-align: center; line-height: 1.3;
+    }
+    .form-tab:last-child { border-right: none; }
+    .form-tab.active { background: var(--navy); color: #fff; }
+    .form-tab:not(.active):hover { background: var(--sky); }
+    .form-panel { display: none; }
+    .form-panel.active { display: block; }
+    .form-section-head {
+      font-size: 11px; font-weight: 700; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--text-light);
+      margin: 20px 0 10px; padding-top: 16px;
+      border-top: 1px solid rgba(10,35,66,0.07);
+    }
+    .form-section-head.first { border-top: none; padding-top: 0; margin-top: 4px; }
+    .radio-group { display: flex; flex-direction: column; gap: 9px; }
+    .radio-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+    .radio-item, .check-item {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 13px; color: var(--text-dark); cursor: pointer; line-height: 1.35;
+    }
+    .radio-item input, .check-item input {
+      width: 15px; height: 15px; accent-color: var(--cyan-dark);
+      cursor: pointer; flex-shrink: 0;
+    }
+    .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 16px; }
+    .hear-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 16px; }
+    .hear-extra {
+      font-size: 13px; border: 1.5px solid rgba(10,35,66,0.12); border-radius: 7px;
+      padding: 6px 10px; font-family: 'Inter', sans-serif; color: var(--text-dark);
+      background: var(--offwhite); outline: none; width: 100%; margin-top: 6px; display: none;
+    }
+    .hear-extra.show { display: block; }
+    .hear-extra:focus { border-color: var(--cyan); }
+
     /* ─── 10. FOOTER ────────────────────────────────────── */
     .footer {
       background: #060F1D;
@@ -1402,45 +1447,255 @@
         <div class="contact__right">
           <div class="form-card">
             <div class="form-card__title">Request Your Free Quote</div>
-            <div class="form-card__sub">We'll respond within 1 business day — usually same day.</div>
-            <form action="#" method="POST">
+            <div class="form-card__sub">The more detail you share, the better we can prepare for your consultation.</div>
+
+            <form id="quoteForm">
+
+              <!-- Contact Info -->
               <div class="form-row">
                 <div class="form-group">
                   <label for="fname">First Name</label>
-                  <input type="text" id="fname" name="fname" placeholder="John" required />
+                  <input type="text" id="fname" placeholder="John" required />
                 </div>
                 <div class="form-group">
                   <label for="lname">Last Name</label>
-                  <input type="text" id="lname" name="lname" placeholder="Smith" required />
+                  <input type="text" id="lname" placeholder="Smith" required />
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label for="email">Email</label>
-                  <input type="email" id="email" name="email" placeholder="john@example.com" required />
+                  <label for="phone">Phone Number</label>
+                  <input type="tel" id="phone" placeholder="(801) 555-0123" required />
                 </div>
                 <div class="form-group">
-                  <label for="phone">Phone</label>
-                  <input type="tel" id="phone" name="phone" placeholder="(801) 555-0123" required />
+                  <label for="email">Email Address</label>
+                  <input type="email" id="email" placeholder="john@example.com" required />
                 </div>
               </div>
               <div class="form-group">
-                <label for="project">Project Type</label>
-                <select id="project" name="project" required>
-                  <option value="" disabled selected>Select what you're interested in</option>
-                  <option>Custom Pool</option>
-                  <option>Luxury Spa</option>
-                  <option>Swim Spa</option>
-                  <option>Cold Plunge System</option>
-                  <option>Backyard Transformation</option>
-                  <option>Pool + Spa Combo</option>
-                  <option>Not sure yet — need guidance</option>
-                </select>
+                <label for="city">Project City / Area</label>
+                <input type="text" id="city" placeholder="e.g. Salt Lake City, Park City, Provo…" />
               </div>
+
+              <!-- Category Tabs -->
+              <div style="margin:4px 0 8px;">
+                <div style="font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text-light);margin-bottom:10px;">What Are You Building?</div>
+                <div class="form-tabs" id="categoryTabs">
+                  <button type="button" class="form-tab active" data-panel="pool">🏊 Pool</button>
+                  <button type="button" class="form-tab" data-panel="spa">♨️ Spa</button>
+                  <button type="button" class="form-tab" data-panel="swimspa">🌊 Swim Spa</button>
+                  <button type="button" class="form-tab" data-panel="cold">🧊 Cold Plunge</button>
+                </div>
+              </div>
+
+              <!-- Pool Panel -->
+              <div class="form-panel active" id="panel-pool">
+                <div class="form-section-head first">Project Type</div>
+                <div class="radio-row" style="margin-bottom:14px;">
+                  <label class="radio-item"><input type="radio" name="pool_type" value="Residential" checked /> Residential</label>
+                  <label class="radio-item"><input type="radio" name="pool_type" value="Commercial" /> Commercial</label>
+                </div>
+                <div class="form-section-head">Project Request</div>
+                <div class="radio-row" style="margin-bottom:14px;">
+                  <label class="radio-item"><input type="radio" name="pool_req" value="New Construction" checked /> New Construction</label>
+                  <label class="radio-item"><input type="radio" name="pool_req" value="Renovation / Remodel" /> Renovation / Remodel</label>
+                </div>
+                <div class="form-section-head">Pool Style</div>
+                <div class="radio-row" style="margin-bottom:14px;">
+                  <label class="radio-item"><input type="radio" name="pool_style" value="Freeform / Organic" checked /> Freeform / Organic</label>
+                  <label class="radio-item"><input type="radio" name="pool_style" value="Geometric / Modern" /> Geometric / Modern</label>
+                  <label class="radio-item"><input type="radio" name="pool_style" value="Lap Pool" /> Lap Pool</label>
+                  <label class="radio-item"><input type="radio" name="pool_style" value="Not sure yet" /> Not sure yet</label>
+                </div>
+                <div class="form-section-head">Approximate Size</div>
+                <div class="radio-row" style="margin-bottom:14px;">
+                  <label class="radio-item"><input type="radio" name="pool_size" value="Under 400 sq ft" checked /> Under 400 sq ft</label>
+                  <label class="radio-item"><input type="radio" name="pool_size" value="400-600 sq ft" /> 400–600 sq ft</label>
+                  <label class="radio-item"><input type="radio" name="pool_size" value="600-800 sq ft" /> 600–800 sq ft</label>
+                  <label class="radio-item"><input type="radio" name="pool_size" value="800+ sq ft" /> 800+ sq ft</label>
+                </div>
+                <div class="form-section-head">Features Desired</div>
+                <div class="check-grid" style="margin-bottom:14px;">
+                  <label class="check-item"><input type="checkbox" name="pool_feat" value="In-Ground Spa" /> In-Ground Spa</label>
+                  <label class="check-item"><input type="checkbox" name="pool_feat" value="Waterfall / Water Feature" /> Waterfall</label>
+                  <label class="check-item"><input type="checkbox" name="pool_feat" value="Slide" /> Slide</label>
+                  <label class="check-item"><input type="checkbox" name="pool_feat" value="Sunshelf / Tanning Ledge" /> Sunshelf / Tanning Ledge</label>
+                  <label class="check-item"><input type="checkbox" name="pool_feat" value="LED Lighting" /> LED Lighting</label>
+                  <label class="check-item"><input type="checkbox" name="pool_feat" value="Automation System" /> Automation System</label>
+                  <label class="check-item"><input type="checkbox" name="pool_feat" value="Pool Cover" /> Pool Cover</label>
+                  <label class="check-item"><input type="checkbox" name="pool_feat" value="Fire Features" /> Fire Features</label>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Budget Range</label>
+                    <select id="pool_budget">
+                      <option value="">Select range</option>
+                      <option>Under $50K</option>
+                      <option>$50K – $75K</option>
+                      <option>$75K – $125K</option>
+                      <option>$125K – $200K</option>
+                      <option>$200K+</option>
+                      <option>Not sure yet</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Timeline</label>
+                    <select id="pool_timeline">
+                      <option value="">Select timeline</option>
+                      <option>Ready to start ASAP</option>
+                      <option>1–3 months</option>
+                      <option>3–6 months</option>
+                      <option>6–12 months</option>
+                      <option>Just exploring</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Spa Panel -->
+              <div class="form-panel" id="panel-spa">
+                <div class="form-section-head first">Spa Type</div>
+                <div class="radio-group" style="margin-bottom:14px;">
+                  <label class="radio-item"><input type="radio" name="spa_type" value="Bullfrog Spa" checked /> Bullfrog Spa</label>
+                  <label class="radio-item"><input type="radio" name="spa_type" value="Custom In-Ground Spa" /> Custom In-Ground Spa</label>
+                </div>
+                <div class="form-section-head">How Many People?</div>
+                <div class="radio-row" style="margin-bottom:14px;">
+                  <label class="radio-item"><input type="radio" name="spa_size" value="2-4 people" checked /> 2–4 people</label>
+                  <label class="radio-item"><input type="radio" name="spa_size" value="4-6 people" /> 4–6 people</label>
+                  <label class="radio-item"><input type="radio" name="spa_size" value="6-8 people" /> 6–8 people</label>
+                </div>
+                <div class="form-section-head">Features Desired</div>
+                <div class="check-grid" style="margin-bottom:14px;">
+                  <label class="check-item"><input type="checkbox" name="spa_feat" value="Premium Therapy Jets" /> Premium Therapy Jets</label>
+                  <label class="check-item"><input type="checkbox" name="spa_feat" value="LED Lighting" /> LED Lighting</label>
+                  <label class="check-item"><input type="checkbox" name="spa_feat" value="App / Automation Control" /> App Control</label>
+                  <label class="check-item"><input type="checkbox" name="spa_feat" value="Cover / Gazebo" /> Cover / Gazebo</label>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Budget Range</label>
+                    <select id="spa_budget">
+                      <option value="">Select range</option>
+                      <option>Under $15K</option>
+                      <option>$15K – $30K</option>
+                      <option>$30K – $50K</option>
+                      <option>$50K+</option>
+                      <option>Not sure yet</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Timeline</label>
+                    <select id="spa_timeline">
+                      <option value="">Select timeline</option>
+                      <option>Ready to start ASAP</option>
+                      <option>1–3 months</option>
+                      <option>3–6 months</option>
+                      <option>Just exploring</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Swim Spa Panel -->
+              <div class="form-panel" id="panel-swimspa">
+                <div class="form-section-head first">Primary Use</div>
+                <div class="radio-group" style="margin-bottom:14px;">
+                  <label class="radio-item"><input type="radio" name="ss_use" value="Fitness / Swimming" checked /> Fitness / Swimming</label>
+                  <label class="radio-item"><input type="radio" name="ss_use" value="Relaxation" /> Relaxation</label>
+                  <label class="radio-item"><input type="radio" name="ss_use" value="Both fitness and relaxation" /> Both</label>
+                </div>
+                <div class="form-section-head">Installation Location</div>
+                <div class="radio-row" style="margin-bottom:14px;">
+                  <label class="radio-item"><input type="radio" name="ss_loc" value="Outdoor" checked /> Outdoor</label>
+                  <label class="radio-item"><input type="radio" name="ss_loc" value="Indoor" /> Indoor</label>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Budget Range</label>
+                    <select id="ss_budget">
+                      <option value="">Select range</option>
+                      <option>Under $30K</option>
+                      <option>$30K – $50K</option>
+                      <option>$50K – $80K</option>
+                      <option>$80K+</option>
+                      <option>Not sure yet</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Timeline</label>
+                    <select id="ss_timeline">
+                      <option value="">Select timeline</option>
+                      <option>Ready to start ASAP</option>
+                      <option>1–3 months</option>
+                      <option>3–6 months</option>
+                      <option>Just exploring</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Cold Plunge Panel -->
+              <div class="form-panel" id="panel-cold">
+                <div class="form-section-head first">Installation Location</div>
+                <div class="radio-row" style="margin-bottom:14px;">
+                  <label class="radio-item"><input type="radio" name="cp_loc" value="Outdoor" checked /> Outdoor</label>
+                  <label class="radio-item"><input type="radio" name="cp_loc" value="Indoor" /> Indoor</label>
+                </div>
+                <div class="form-section-head">Setup Type</div>
+                <div class="radio-group" style="margin-bottom:14px;">
+                  <label class="radio-item"><input type="radio" name="cp_setup" value="Standalone cold plunge" checked /> Standalone Cold Plunge</label>
+                  <label class="radio-item"><input type="radio" name="cp_setup" value="Paired with sauna" /> Paired with Sauna</label>
+                  <label class="radio-item"><input type="radio" name="cp_setup" value="Full hot/cold wellness suite" /> Full Hot/Cold Wellness Suite</label>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Budget Range</label>
+                    <select id="cp_budget">
+                      <option value="">Select range</option>
+                      <option>Under $5K</option>
+                      <option>$5K – $15K</option>
+                      <option>$15K – $30K</option>
+                      <option>$30K+</option>
+                      <option>Not sure yet</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Timeline</label>
+                    <select id="cp_timeline">
+                      <option value="">Select timeline</option>
+                      <option>Ready to start ASAP</option>
+                      <option>1–3 months</option>
+                      <option>3–6 months</option>
+                      <option>Just exploring</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- How Did You Hear -->
+              <div class="form-section-head">How Did You Hear About Us?</div>
+              <div class="hear-grid" style="margin-bottom:10px;">
+                <label class="radio-item"><input type="radio" name="hear" value="Google Search" /> Google Search</label>
+                <label class="radio-item"><input type="radio" name="hear" value="Social Media" /> Social Media</label>
+                <label class="radio-item"><input type="radio" name="hear" value="Friend / Family" /> Friend / Family</label>
+                <label class="radio-item"><input type="radio" name="hear" value="Drive By" /> Drive By</label>
+                <label class="radio-item" style="grid-column:span 2;flex-wrap:wrap;gap:8px;">
+                  <input type="radio" name="hear" value="Referral" id="hearReferral" /><span>Referral</span>
+                  <input type="text" class="hear-extra" id="hearReferralText" placeholder="Who referred you?" />
+                </label>
+                <label class="radio-item" style="grid-column:span 2;flex-wrap:wrap;gap:8px;">
+                  <input type="radio" name="hear" value="Other" id="hearOther" /><span>Other</span>
+                  <input type="text" class="hear-extra" id="hearOtherText" placeholder="Please specify…" />
+                </label>
+              </div>
+
+              <!-- Notes -->
+              <div class="form-section-head">Anything Else We Should Know?</div>
               <div class="form-group">
-                <label for="message">Tell Us About Your Project</label>
-                <textarea id="message" name="message" placeholder="Describe your backyard, your vision, your budget range — anything that helps us prepare for your consultation..."></textarea>
+                <textarea id="message" placeholder="Describe your yard, special requests, existing features, or any questions for our team…" style="min-height:80px;"></textarea>
               </div>
+
               <button type="submit" class="btn btn--primary form-submit">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
                 Send My Free Quote Request
@@ -1599,62 +1854,103 @@
     }, { threshold: 0.4 });
     document.querySelectorAll('section[id], div[id]').forEach(s => sectionObserver.observe(s));
 
-    // ── Form Tracking + Submission ────────────────────────
-    const form     = document.querySelector('form');
+    // ── Quote Form ────────────────────────────────────────
+    const form      = document.getElementById('quoteForm');
     const submitBtn = form.querySelector('.form-submit');
     let formStarted = false;
 
-    form.querySelectorAll('input, select, textarea').forEach(field => {
-      field.addEventListener('focus', () => {
-        if (!formStarted) {
-          formStarted = true;
-          track('form_start', { form_id: 'quote_request' });
-        }
+    // Tab switching
+    document.getElementById('categoryTabs').addEventListener('click', e => {
+      const tab = e.target.closest('.form-tab');
+      if (!tab) return;
+      document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+    });
+
+    // Show/hide referral & other text fields
+    form.addEventListener('change', e => {
+      if (e.target.name === 'hear') {
+        document.getElementById('hearReferralText').classList.toggle('show', e.target.value === 'Referral');
+        document.getElementById('hearOtherText').classList.toggle('show', e.target.value === 'Other');
+      }
+    });
+
+    // Track form start
+    form.querySelectorAll('input, select, textarea').forEach(f => {
+      f.addEventListener('focus', () => {
+        if (!formStarted) { formStarted = true; track('form_start', { form_id: 'quote_request' }); }
       }, { once: true });
     });
+
+    // Build structured message from visible panel
+    function buildMessage() {
+      const activePanel = form.querySelector('.form-panel.active');
+      const lines = [];
+      // Radio fields
+      activePanel.querySelectorAll('input[type=radio]:checked').forEach(r => {
+        const head = r.closest('[style*="margin-bottom"]')?.previousElementSibling?.textContent || '';
+        lines.push(`${head.trim()}: ${r.value}`);
+      });
+      // Checkboxes
+      const checked = [...activePanel.querySelectorAll('input[type=checkbox]:checked')].map(c => c.value);
+      if (checked.length) lines.push(`Features: ${checked.join(', ')}`);
+      // Selects
+      activePanel.querySelectorAll('select').forEach(s => {
+        if (s.value) lines.push(`${s.previousElementSibling?.textContent?.trim() || s.id}: ${s.value}`);
+      });
+      // City
+      const city = document.getElementById('city').value.trim();
+      if (city) lines.push(`Project Area: ${city}`);
+      // How heard
+      const heard = form.querySelector('input[name=hear]:checked');
+      if (heard) {
+        let hearVal = heard.value;
+        if (hearVal === 'Referral') hearVal += ' — ' + (document.getElementById('hearReferralText').value.trim() || '');
+        if (hearVal === 'Other')    hearVal += ' — ' + (document.getElementById('hearOtherText').value.trim() || '');
+        lines.push(`How they heard: ${hearVal}`);
+      }
+      // Notes
+      const notes = document.getElementById('message').value.trim();
+      if (notes) lines.push(`\nNotes: ${notes}`);
+      return lines.join('\n');
+    }
 
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></span> Sending…';
 
-      const fd = new FormData(form);
+      const activeTab   = form.querySelector('.form-tab.active');
+      const projectType = activeTab ? activeTab.textContent.replace(/[^\w\s]/g, '').trim() : '';
 
-      // Build payload, split name fields
       const payload = {
-        first_name:   form.querySelector('#fname').value.trim(),
-        last_name:    form.querySelector('#lname').value.trim(),
-        email:        form.querySelector('#email').value.trim(),
-        phone:        form.querySelector('#phone').value.trim(),
-        project_type: form.querySelector('#project').value,
-        message:      form.querySelector('#message').value.trim(),
+        first_name:   document.getElementById('fname').value.trim(),
+        last_name:    document.getElementById('lname').value.trim(),
+        email:        document.getElementById('email').value.trim(),
+        phone:        document.getElementById('phone').value.trim(),
+        project_type: projectType,
+        message:      buildMessage(),
         ...utmParams,
       };
 
       try {
-        const res = await fetch('/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
+        const res  = await fetch('/api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
         const data = await res.json();
-
         if (data.success) {
-          track('generate_lead', {
-            currency: 'USD',
-            project_type: payload.project_type,
-            lead_id: data.id,
-          });
+          track('generate_lead', { currency:'USD', project_type: projectType, lead_id: data.id });
           submitBtn.textContent = '✓ Request Sent! We\'ll be in touch soon.';
-          submitBtn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
+          submitBtn.style.background = 'linear-gradient(135deg,#059669,#10b981)';
           form.reset();
+          // Reset tabs to pool
+          document.querySelectorAll('.form-tab').forEach((t,i) => t.classList.toggle('active', i===0));
+          document.querySelectorAll('.form-panel').forEach((p,i) => p.classList.toggle('active', i===0));
           formStarted = false;
-        } else {
-          throw new Error('Server error');
-        }
+        } else { throw new Error(); }
       } catch {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Send My Free Quote Request';
+        submitBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Send My Free Quote Request';
         submitBtn.style.background = '';
         alert('Something went wrong. Please call us at 801.360.5577 or try again.');
       }
