@@ -35,6 +35,8 @@ async function init() {
       ip         TEXT DEFAULT ''
     );
   `);
+  // Add user_agent column to existing tables without it
+  await pool.query(`ALTER TABLE events ADD COLUMN IF NOT EXISTS user_agent TEXT DEFAULT ''`);
 }
 
 // ── Leads ─────────────────────────────────────────────────
@@ -103,7 +105,8 @@ async function getStats() {
 async function getAnalytics(days = 30) {
   const interval = `${days} days`;
 
-  const [views, unique, starts, leadsInRange, daily, eventCounts, ctaRows, sectionRows] = await Promise.all([
+  const [views, unique, starts, leadsInRange, daily, eventCounts, ctaRows, sectionRows,
+         todayViews, weekViews, todayUnique, topPages, topReferrers, recentRows] = await Promise.all([
     pool.query("SELECT COUNT(*)::int n FROM events WHERE event='page_view' AND created_at >= NOW() - $1::INTERVAL", [interval]),
     pool.query("SELECT COUNT(DISTINCT ip)::int n FROM events WHERE event='page_view' AND created_at >= NOW() - $1::INTERVAL", [interval]),
     pool.query("SELECT COUNT(*)::int n FROM events WHERE event='form_start' AND created_at >= NOW() - $1::INTERVAL", [interval]),
@@ -141,6 +144,30 @@ async function getAnalytics(days = 30) {
         AND data IS NOT NULL AND data <> '' AND data <> '{}'
         AND (data::jsonb)->>'section' IS NOT NULL
       GROUP BY section ORDER BY n DESC`, [interval]),
+
+    // Today page views
+    pool.query(`SELECT COUNT(*)::int n FROM events WHERE event='page_view' AND created_at::date = CURRENT_DATE`),
+    // This week page views
+    pool.query(`SELECT COUNT(*)::int n FROM events WHERE event='page_view' AND created_at >= date_trunc('week', CURRENT_DATE)`),
+    // Today unique visitors
+    pool.query(`SELECT COUNT(DISTINCT ip)::int n FROM events WHERE event='page_view' AND created_at::date = CURRENT_DATE`),
+    // Top pages
+    pool.query(`SELECT COALESCE(NULLIF(page,''),'/') page, COUNT(*)::int n FROM events
+      WHERE event='page_view' AND created_at >= NOW() - $1::INTERVAL
+      GROUP BY page ORDER BY n DESC LIMIT 8`, [interval]),
+    // Top referrers
+    pool.query(`SELECT
+        COALESCE(NULLIF(NULLIF((data::jsonb)->>'referrer',''),'direct'),'Direct') ref,
+        COUNT(*)::int n
+      FROM events
+      WHERE event='page_view' AND created_at >= NOW() - $1::INTERVAL
+        AND data IS NOT NULL AND data <> '' AND data <> '{}'
+      GROUP BY ref ORDER BY n DESC LIMIT 8`, [interval]),
+    // Recent visitors (last 30 page views)
+    pool.query(`SELECT created_at, page, ip, user_agent,
+        CASE WHEN data IS NOT NULL AND data <> '' AND data <> '{}' THEN data ELSE '{}' END AS data
+      FROM events WHERE event='page_view'
+      ORDER BY created_at DESC LIMIT 30`),
   ]);
 
   const pageViews    = views.rows[0].n;
@@ -149,26 +176,32 @@ async function getAnalytics(days = 30) {
 
   return {
     pageViews,
-    uniqueIPs:    unique.rows[0].n,
-    formStarts:   starts.rows[0].n,
-    leadsInRange: leadsCount,
+    uniqueIPs:      unique.rows[0].n,
+    formStarts:     starts.rows[0].n,
+    leadsInRange:   leadsCount,
     convRate,
-    daily:        daily.rows,
-    topEvents:    eventCounts.rows,
-    topCTAs:      ctaRows.rows,
-    topSections:  sectionRows.rows,
+    daily:          daily.rows,
+    topEvents:      eventCounts.rows,
+    topCTAs:        ctaRows.rows,
+    topSections:    sectionRows.rows,
+    todayViews:     todayViews.rows[0].n,
+    weekViews:      weekViews.rows[0].n,
+    todayUnique:    todayUnique.rows[0].n,
+    topPages:       topPages.rows,
+    topReferrers:   topReferrers.rows,
+    recentVisitors: recentRows.rows,
     days,
   };
 }
 
 // ── Events ────────────────────────────────────────────────
-async function insertEvent({ event, page, data, ip }) {
+async function insertEvent({ event, page, data, ip, user_agent = '' }) {
   let jsonData;
   try { jsonData = typeof data === 'string' ? JSON.parse(data) : (data || {}); }
   catch { jsonData = {}; }
   await pool.query(
-    'INSERT INTO events (event, page, data, ip) VALUES ($1,$2,$3,$4)',
-    [event, page, jsonData, ip]
+    'INSERT INTO events (event, page, data, ip, user_agent) VALUES ($1,$2,$3,$4,$5)',
+    [event, page, jsonData, ip, user_agent]
   );
 }
 

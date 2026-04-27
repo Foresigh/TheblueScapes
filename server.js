@@ -84,7 +84,10 @@ app.post('/api/event', async (req, res) => {
   const { event, page, data } = req.body;
   if (!event) return res.status(400).json({ error: 'Missing event' });
   try {
-    await db.insertEvent({ event, page: page || '', data: data || {}, ip: req.ip || '' });
+    await db.insertEvent({
+      event, page: page || '', data: data || {}, ip: req.ip || '',
+      user_agent: req.headers['user-agent'] || '',
+    });
   } catch { /* never block the page for analytics */ }
   res.json({ ok: true });
 });
@@ -128,6 +131,19 @@ app.delete('/admin/api/leads/:id', requireAuth, async (req, res) => {
   res.json({ success: true });
 });
 
+function detectDevice(ua = '') {
+  if (!ua) return 'Unknown';
+  if (/tablet|ipad/i.test(ua)) return 'Tablet';
+  if (/mobile|android|iphone|ipod|blackberry|windows phone/i.test(ua)) return 'Mobile';
+  return 'Desktop';
+}
+
+function shortReferrer(ref) {
+  if (!ref || ref === 'Direct') return 'Direct';
+  try { return new URL(ref).hostname.replace(/^www\./, ''); }
+  catch { return ref.length > 40 ? ref.slice(0, 40) + '…' : ref; }
+}
+
 app.get('/admin/api/analytics', requireAuth, async (req, res) => {
   const days = parseInt(req.query.days) || 30;
   const [analytics, ipRows] = await Promise.all([
@@ -135,6 +151,7 @@ app.get('/admin/api/analytics', requireAuth, async (req, res) => {
     db.getTopIPs(days),
   ]);
 
+  // Top locations (aggregated)
   const locationMap = {};
   for (const { ip, n } of ipRows) {
     const geo = geoip.lookup(ip);
@@ -148,7 +165,21 @@ app.get('/admin/api/analytics', requireAuth, async (req, res) => {
     .slice(0, 10)
     .map(([location, { n, country }]) => ({ location, n, country }));
 
-  res.json({ ...analytics, topLocations });
+  // Recent visitors with geo + device
+  const recentVisitors = (analytics.recentVisitors || []).map(r => {
+    const geo = geoip.lookup(r.ip);
+    let data = {};
+    try { data = typeof r.data === 'string' ? JSON.parse(r.data) : (r.data || {}); } catch {}
+    return {
+      time:     r.created_at,
+      page:     r.page || '/',
+      location: geo ? [geo.city, geo.region, geo.country].filter(Boolean).join(', ') : 'Unknown',
+      referrer: shortReferrer(data.referrer || 'Direct'),
+      device:   detectDevice(r.user_agent),
+    };
+  });
+
+  res.json({ ...analytics, topLocations, recentVisitors });
 });
 
 app.get('/admin/api/export', requireAuth, async (req, res) => {
