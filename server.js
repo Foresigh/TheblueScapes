@@ -50,6 +50,16 @@ const requireAuth = (req, res, next) => {
 // ── Landing Page ──────────────────────────────────────────
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
+// ── Public: Site Settings ─────────────────────────────────
+app.get('/api/settings', async (req, res) => {
+  try {
+    const val = await db.getSetting('under_construction');
+    res.json({ under_construction: val === 'true' });
+  } catch {
+    res.json({ under_construction: false });
+  }
+});
+
 // ── Public: Lead Capture ──────────────────────────────────
 app.post('/api/contact', async (req, res) => {
   const { first_name, last_name, email, phone, project_type, message,
@@ -128,6 +138,12 @@ app.patch('/admin/api/leads/:id', requireAuth, async (req, res) => {
 
 app.delete('/admin/api/leads/:id', requireAuth, async (req, res) => {
   await db.deleteLead(req.params.id);
+  res.json({ success: true });
+});
+
+app.patch('/admin/api/settings', requireAuth, async (req, res) => {
+  const { under_construction } = req.body;
+  await db.setSetting('under_construction', under_construction ? 'true' : 'false');
   res.json({ success: true });
 });
 

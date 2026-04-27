@@ -133,6 +133,36 @@
     }
     .btn svg { width: 18px; height: 18px; flex-shrink: 0; }
 
+    /* ─── UNDER CONSTRUCTION BANNER ────────────────────── */
+    .uc-banner {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 9999;
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      color: #1c1917;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      padding: 10px 48px 10px 16px;
+      line-height: 1.4;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .uc-banner.visible { display: block; }
+    .uc-banner a { color: inherit; text-decoration: underline; }
+    .uc-banner__close {
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      font-size: 18px; line-height: 1;
+      cursor: pointer; color: inherit;
+      padding: 4px 8px;
+      opacity: .7;
+    }
+    .uc-banner__close:hover { opacity: 1; }
+    .uc-banner.visible ~ .navbar { top: 42px; }
+
     /* ─── NAVBAR ────────────────────────────────────────── */
     .navbar {
       position: fixed;
@@ -1062,6 +1092,12 @@
 </head>
 <body>
 
+  <!-- Under Construction Banner (shown via /api/settings) -->
+  <div class="uc-banner" id="ucBanner">
+    🚧 We're putting the finishing touches on our new website — call us at <a href="tel:8013605577">801.360.5577</a> for immediate assistance.
+    <button class="uc-banner__close" onclick="document.getElementById('ucBanner').classList.remove('visible')" aria-label="Dismiss">✕</button>
+  </div>
+
   <!-- ═══════════════════════════════════════════════════
        NAVBAR
   ═══════════════════════════════════════════════════ -->
@@ -1854,6 +1890,11 @@
   </footer>
 
   <script>
+    // ── Under Construction Banner ─────────────────────────
+    fetch('/api/settings').then(r => r.json()).then(s => {
+      if (s.under_construction) document.getElementById('ucBanner').classList.add('visible');
+    }).catch(() => {});
+
     // ── Scroll Reveal ─────────────────────────────────────
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(e => {

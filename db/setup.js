@@ -37,6 +37,18 @@ async function init() {
   `);
   // Add user_agent column to existing tables without it
   await pool.query(`ALTER TABLE events ADD COLUMN IF NOT EXISTS user_agent TEXT DEFAULT ''`);
+
+  // Settings table (key/value)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS settings (
+      key   TEXT PRIMARY KEY,
+      value TEXT NOT NULL DEFAULT ''
+    )
+  `);
+  await pool.query(`
+    INSERT INTO settings (key, value) VALUES ('under_construction', 'false')
+    ON CONFLICT (key) DO NOTHING
+  `);
 }
 
 // ── Leads ─────────────────────────────────────────────────
@@ -217,4 +229,18 @@ async function getTopIPs(days = 30) {
   return rows;
 }
 
-module.exports = { init, insertLead, queryLeads, updateLead, deleteLead, getStats, getAnalytics, insertEvent, getTopIPs };
+// ── Settings ──────────────────────────────────────────────
+async function getSetting(key) {
+  const { rows } = await pool.query('SELECT value FROM settings WHERE key=$1', [key]);
+  return rows[0]?.value ?? null;
+}
+
+async function setSetting(key, value) {
+  await pool.query(
+    `INSERT INTO settings (key, value) VALUES ($1, $2)
+     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`,
+    [key, value]
+  );
+}
+
+module.exports = { init, insertLead, queryLeads, updateLead, deleteLead, getStats, getAnalytics, insertEvent, getTopIPs, getSetting, setSetting };
