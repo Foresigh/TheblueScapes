@@ -49,6 +49,8 @@ const requireAuth = (req, res, next) => {
 
 // ── Landing Page ──────────────────────────────────────────
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/privacy', (req, res) => res.sendFile(path.join(__dirname, 'privacy.html')));
+app.get('/terms',   (req, res) => res.sendFile(path.join(__dirname, 'terms.html')));
 
 // ── Public: Site Settings ─────────────────────────────────
 app.get('/api/settings', async (req, res) => {

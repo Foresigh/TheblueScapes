@@ -1003,6 +1003,33 @@
       transition: color .2s;
     }
     .footer__links a:hover { color: var(--cyan-light); }
+    .footer__legal {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .footer__legal a {
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      transition: color .2s;
+    }
+    .footer__legal a:hover { color: var(--cyan-light); }
+    .footer__legal span { color: rgba(255,255,255,0.18); font-size: 12px; }
+    .footer__builtby {
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.25);
+      margin-bottom: 20px;
+    }
+    .footer__builtby a {
+      color: var(--cyan-dark);
+      font-weight: 600;
+      transition: color .2s;
+    }
+    .footer__builtby a:hover { color: var(--cyan-light); }
     .footer__bottom {
       border-top: 1px solid rgba(255,255,255,0.07);
       padding-top: 24px;
@@ -1882,6 +1909,14 @@
           </ul>
         </div>
       </div>
+      <div class="footer__legal">
+        <a href="/privacy">Privacy Policy</a>
+        <span>·</span>
+        <a href="/terms">Terms of Service</a>
+        <span>·</span>
+        <a href="#contact">Get a Free Quote</a>
+      </div>
+      <div class="footer__builtby">Built by <a href="https://gorevamp.ai/" target="_blank" rel="noopener">Revamp Digital LLC</a></div>
       <div class="footer__bottom">
         <div class="footer__copy">© 2025 BlueScapes Utah. All rights reserved. Licensed & Insured.</div>
         <div class="footer__service-area">Serving Salt Lake County · Utah County · Davis County · Park City · and Surrounding Areas</div>
