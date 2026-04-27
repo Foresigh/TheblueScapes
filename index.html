@@ -823,6 +823,52 @@
       .form-card { padding: 28px 22px; }
     }
 
+    /* ─── EXPECTATION LETTER ───────────────────────────── */
+    .expect-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; background: none; border: 1.5px solid rgba(10,35,66,0.13);
+      border-radius: 10px; padding: 13px 16px; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+      color: var(--text-mid); margin-top: 20px; transition: all .2s;
+    }
+    .expect-toggle:hover { background: var(--sky); border-color: var(--cyan); }
+    .expect-toggle svg { transition: transform .3s; flex-shrink: 0; }
+    .expect-toggle.open svg { transform: rotate(180deg); }
+    .expect-body {
+      display: none; border: 1.5px solid rgba(10,35,66,0.10);
+      border-top: none; border-radius: 0 0 10px 10px;
+      padding: 22px 20px; background: #FAFCFE;
+    }
+    .expect-body.open { display: block; }
+    .expect-body h3 {
+      font-size: 15px; font-weight: 700; color: var(--navy);
+      margin-bottom: 12px; line-height: 1.4;
+    }
+    .expect-body p {
+      font-size: 13px; color: var(--text-mid); line-height: 1.75;
+      margin-bottom: 12px;
+    }
+    .expect-body p:last-of-type { margin-bottom: 16px; }
+    .expect-timeline {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0;
+    }
+    .expect-step {
+      background: #fff; border: 1px solid rgba(10,35,66,0.10);
+      border-radius: 9px; padding: 12px 14px;
+    }
+    .expect-step__label {
+      font-size: 10px; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--cyan-dark); margin-bottom: 4px;
+    }
+    .expect-step__time {
+      font-size: 15px; font-weight: 800; color: var(--navy); margin-bottom: 2px;
+    }
+    .expect-step__desc { font-size: 12px; color: var(--text-light); }
+    .expect-sig {
+      font-size: 13px; font-weight: 600; color: var(--navy);
+      border-top: 1px solid rgba(10,35,66,0.08); padding-top: 14px; margin-top: 4px;
+    }
+
     /* ─── QUOTE FORM ENHANCED ──────────────────────────── */
     .form-tabs {
       display: grid; grid-template-columns: repeat(4,1fr);
@@ -1701,6 +1747,46 @@
                 Send My Free Quote Request
               </button>
               <p class="form-note">🔒 Your info is private. No spam, ever. We'll only reach out about your project.</p>
+
+              <!-- What to Expect Letter -->
+              <button type="button" class="expect-toggle" id="expectToggle">
+                <span>📋 &nbsp;What to expect after you submit</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div class="expect-body" id="expectBody">
+                <h3>A Note to Our Future Clients</h3>
+                <p>Thank you for considering BlueScapes for your project. Before we get started, we want to be upfront about what building a quality pool in Utah looks like today.</p>
+                <p>Demand for new pool construction across Utah remains exceptionally high. Quality materials — gunite, plumbing, automation systems, and specialty finishes — continue to face supply constraints and longer lead times. Finding and retaining skilled tradespeople who meet our standards is equally competitive in today's market.</p>
+                <p><strong>We will not rush a project to fit an unrealistic schedule.</strong> Every BlueScapes build is completed by our own in-house crew using materials we personally vet. That commitment means we take on a limited number of new projects at a time — and we give each one the attention it deserves.</p>
+
+                <div class="expect-timeline">
+                  <div class="expect-step">
+                    <div class="expect-step__label">Step 1</div>
+                    <div class="expect-step__time">1–2 Weeks</div>
+                    <div class="expect-step__desc">Free design consultation & site visit</div>
+                  </div>
+                  <div class="expect-step">
+                    <div class="expect-step__label">Step 2</div>
+                    <div class="expect-step__time">4–8 Weeks</div>
+                    <div class="expect-step__desc">3D design, permitting & approvals</div>
+                  </div>
+                  <div class="expect-step">
+                    <div class="expect-step__label">Step 3</div>
+                    <div class="expect-step__time">8–16 Weeks</div>
+                    <div class="expect-step__desc">Construction by our in-house crew</div>
+                  </div>
+                  <div class="expect-step">
+                    <div class="expect-step__label">Step 4</div>
+                    <div class="expect-step__time">Final Walk</div>
+                    <div class="expect-step__desc">Handover, orientation & first swim</div>
+                  </div>
+                </div>
+
+                <p>We will give you a realistic start date during your consultation — not a number designed just to win your business. Submitting this form reserves your place in our scheduling queue.</p>
+                <p>We genuinely appreciate your trust in BlueScapes. We look forward to building something extraordinary for your family.</p>
+                <div class="expect-sig">— The BlueScapes Team &nbsp;·&nbsp; 801.360.5577 &nbsp;·&nbsp; bluescapesutah@gmail.com</div>
+              </div>
+
             </form>
           </div>
         </div>
@@ -1853,6 +1939,12 @@
       });
     }, { threshold: 0.4 });
     document.querySelectorAll('section[id], div[id]').forEach(s => sectionObserver.observe(s));
+
+    // ── Expectation Letter Toggle ─────────────────────────
+    document.getElementById('expectToggle').addEventListener('click', function() {
+      this.classList.toggle('open');
+      document.getElementById('expectBody').classList.toggle('open');
+    });
 
     // ── Quote Form ────────────────────────────────────────
     const form      = document.getElementById('quoteForm');
