@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BlueScapes Admin</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="icon" type="image/svg+xml" href="/logo-icon.svg"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
@@ -33,6 +33,10 @@
       box-shadow: 0 24px 80px rgba(0,0,0,0.35);
     }
     .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
       font-size: 26px;
       font-weight: 800;
       color: var(--navy);
@@ -117,7 +121,10 @@
 </head>
 <body>
   <div class="card">
-    <div class="logo"><span>BLU</span>ESCAPES</div>
+    <div class="logo">
+      <img src="/logo-icon.svg" alt="" width="38" height="38"/>
+      <span><span>BLU</span>ESCAPES</span>
+    </div>
     <div class="subtitle">Admin Dashboard</div>
 
     <div class="error-banner" id="errorBanner">
