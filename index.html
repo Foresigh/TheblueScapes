@@ -569,70 +569,163 @@
     }
 
     /* ─── 5. PORTFOLIO ──────────────────────────────────── */
-    .portfolio__header {
-      text-align: center;
-      margin-bottom: 52px;
-    }
-    .portfolio__grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: auto auto;
-      gap: 16px;
-    }
-    .portfolio-item {
-      position: relative;
-      border-radius: var(--radius);
-      overflow: hidden;
-      cursor: pointer;
-    }
-    .portfolio-item:first-child {
-      grid-column: span 2;
-      aspect-ratio: 16/9;
-    }
-    .portfolio-item:not(:first-child) { aspect-ratio: 4/3; }
-    .portfolio-item__bg {
-      width: 100%; height: 100%;
-      background-size: cover;
-      background-position: center;
-      transition: transform .5s ease;
-    }
-    .portfolio-item:hover .portfolio-item__bg { transform: scale(1.06); }
-    /* Placeholder colors – replace with real project photos */
-    .portfolio-item:nth-child(1) .portfolio-item__bg { background-color: #0A6B9E; background-image: url('https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=900&q=80'); }
-    .portfolio-item:nth-child(2) .portfolio-item__bg { background-color: #0D5E8A; background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80'); }
-    .portfolio-item:nth-child(3) .portfolio-item__bg { background-color: #0E5278; background-image: url('https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=600&q=80'); }
-    .portfolio-item:nth-child(4) .portfolio-item__bg { background-color: #093F64; background-image: url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80'); }
-    .portfolio-item:nth-child(5) .portfolio-item__bg { background-color: #0B4C73; background-image: url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=80'); }
-    .portfolio-item:nth-child(6) .portfolio-item__bg { background-color: #0A3F5E; background-image: url('https://images.unsplash.com/photo-1519046904884-53103b34b206?w=600&q=80'); }
-
-    .portfolio-item__overlay {
+    .portfolio-section { background: var(--navy); padding: 90px 0; position: relative; overflow: hidden; }
+    .portfolio-section::before {
+      content: '';
       position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, rgba(10,35,66,0.85) 0%, transparent 50%);
+      bottom: -200px; right: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,174,239,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .portfolio__header { text-align: center; margin-bottom: 56px; }
+
+    .portfolio-exclusive {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+    .portfolio-left {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 48px 44px;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
-      padding: 22px;
-      opacity: 0;
-      transition: opacity .3s;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
     }
-    .portfolio-item:hover .portfolio-item__overlay { opacity: 1; }
-    .portfolio-item__label {
+    .portfolio-left::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cyan-dark), var(--cyan-light));
+    }
+    .portfolio-left__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: .1em;
+      letter-spacing: .12em;
       text-transform: uppercase;
-      color: var(--cyan-light);
-      margin-bottom: 4px;
+      color: var(--cyan);
+      margin-bottom: 20px;
     }
-    .portfolio-item__caption {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--white);
+    .portfolio-left__eyebrow svg { width: 13px; height: 13px; }
+    .portfolio-left h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 3vw, 40px);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+      letter-spacing: -.02em;
+      margin-bottom: 18px;
     }
-    @media (max-width: 700px) {
-      .portfolio__grid { grid-template-columns: 1fr; }
-      .portfolio-item:first-child { grid-column: span 1; }
+    .portfolio-left h2 span { color: var(--cyan); }
+    .portfolio-left p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.60);
+      line-height: 1.75;
+      margin-bottom: 32px;
+    }
+    .portfolio-perks {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+    .portfolio-perk {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .portfolio-perk__icon {
+      width: 28px; height: 28px;
+      background: rgba(0,174,239,0.14);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .portfolio-perk__icon svg { width: 14px; height: 14px; color: var(--cyan); }
+    .portfolio-perk__text strong { display: block; font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .portfolio-perk__text span { font-size: 13px; color: rgba(255,255,255,0.50); line-height: 1.5; }
+
+    .portfolio-slots {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      background: rgba(245,158,11,0.10);
+      border: 1px solid rgba(245,158,11,0.25);
+      border-radius: 12px;
+      margin-bottom: 28px;
+    }
+    .portfolio-slots svg { width: 20px; height: 20px; color: #F59E0B; flex-shrink: 0; }
+    .portfolio-slots__text strong { display: block; font-size: 14px; font-weight: 700; color: #F59E0B; }
+    .portfolio-slots__text span { font-size: 12px; color: rgba(245,158,11,0.70); }
+
+    .portfolio-right {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 24px;
+    }
+    .portfolio-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: all .3s;
+    }
+    .portfolio-card:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(0,174,239,0.25);
+      transform: translateY(-3px);
+    }
+    .portfolio-card__num {
+      position: absolute;
+      top: 16px; right: 22px;
+      font-family: 'Playfair Display', serif;
+      font-size: 64px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.03);
+      line-height: 1;
+    }
+    .portfolio-card__icon {
+      width: 44px; height: 44px;
+      background: rgba(0,174,239,0.12);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px;
+    }
+    .portfolio-card__icon svg { width: 22px; height: 22px; color: var(--cyan); }
+    .portfolio-card__title { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .portfolio-card__desc { font-size: 13px; color: rgba(255,255,255,0.50); line-height: 1.6; }
+    .portfolio-card__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-top: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .portfolio-exclusive { grid-template-columns: 1fr; }
+      .portfolio-right { grid-template-rows: auto; grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 540px) {
+      .portfolio-right { grid-template-columns: 1fr; }
+      .portfolio-left { padding: 32px 26px; }
     }
 
     /* ─── 6. MID CTA ────────────────────────────────────── */
@@ -1635,56 +1728,96 @@
   <!-- ═══════════════════════════════════════════════════
        5. PORTFOLIO
   ═══════════════════════════════════════════════════ -->
-  <section class="section section--sky" id="portfolio">
+  <section class="portfolio-section" id="portfolio">
     <div class="container">
       <div class="portfolio__header reveal">
-        <div class="tag">Our Work</div>
-        <h2 class="headline">Backyards We've <span class="accent">Transformed</span></h2>
-        <p class="subheadline" style="margin:16px auto 0;">Every project tells a story. Here are just a few of the outdoor escapes we've built across Utah.</p>
+        <div class="tag tag--white">First Projects</div>
+        <h2 class="headline headline--white">Be Part of Our <span class="accent">First Chapter</span></h2>
+        <p class="subheadline subheadline--white" style="margin:16px auto 0;">We're selectively taking our first Utah builds — and the families who say yes early get something no future client can get.</p>
       </div>
-      <div class="portfolio__grid">
-        <div class="portfolio-item reveal">
-          <div class="portfolio-item__bg"></div>
-          <div class="portfolio-item__overlay">
-            <div class="portfolio-item__label">Custom Pool + Spa</div>
-            <div class="portfolio-item__caption">Salt Lake City — Resort-Style Infinity Edge with Integrated Spa</div>
+
+      <div class="portfolio-exclusive">
+
+        <div class="portfolio-left reveal">
+          <div class="portfolio-left__eyebrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Founding Client Opportunity
+          </div>
+          <h2>Your Project Becomes<br/><span>Our Showpiece.</span></h2>
+          <p>We're bringing 60+ years of combined expertise to Utah — and our first clients get our absolute best work. Every detail, every finish, every decision gets our full attention because your project is the one we'll be proud to show the world.</p>
+
+          <div class="portfolio-perks">
+            <div class="portfolio-perk">
+              <div class="portfolio-perk__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+              </div>
+              <div class="portfolio-perk__text">
+                <strong>Founder's Pricing</strong>
+                <span>First clients lock in our introductory rates before we adjust for demand.</span>
+              </div>
+            </div>
+            <div class="portfolio-perk">
+              <div class="portfolio-perk__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+              </div>
+              <div class="portfolio-perk__text">
+                <strong>Free 3D Design Session</strong>
+                <span>We'll render your exact backyard in photorealistic 3D — at no charge.</span>
+              </div>
+            </div>
+            <div class="portfolio-perk">
+              <div class="portfolio-perk__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              </div>
+              <div class="portfolio-perk__text">
+                <strong>Direct Access to the Founders</strong>
+                <span>You work directly with Ramato — not a sales rep. Real answers, real accountability.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="portfolio-slots">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <div class="portfolio-slots__text">
+              <strong>Limited spots this season</strong>
+              <span>We're only accepting a small number of founding projects — inquire early.</span>
+            </div>
+          </div>
+
+          <a href="#contact" class="btn btn--primary" style="align-self:flex-start;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            Claim My Spot
+          </a>
+        </div>
+
+        <div class="portfolio-right">
+          <div class="portfolio-card reveal reveal-delay-1">
+            <div class="portfolio-card__num">01</div>
+            <div class="portfolio-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 12c1.5-2 3-3 4.5-3s3 2 4.5 2 3-3 4.5-3 3 1 4.5 3"/><rect x="6" y="2" width="12" height="7" rx="2"/></svg>
+            </div>
+            <div class="portfolio-card__title">Custom Pool Design</div>
+            <div class="portfolio-card__desc">From geometric precision to freeform resort-style — designed around your yard, your vision, and Utah's climate.</div>
+            <div class="portfolio-card__badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+              Accepting first builds now
+            </div>
+          </div>
+
+          <div class="portfolio-card reveal reveal-delay-2">
+            <div class="portfolio-card__num">02</div>
+            <div class="portfolio-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v2m4-2v2m4-2v2"/><path d="M5 10h14a1 1 0 011 1v5a4 4 0 01-4 4H8a4 4 0 01-4-4v-5a1 1 0 011-1z"/></svg>
+            </div>
+            <div class="portfolio-card__title">Spas, Swim Spas & Cold Plunges</div>
+            <div class="portfolio-card__desc">Complete wellness installations — from luxury in-ground spas to biohacker-grade cold plunge systems built for year-round Utah use.</div>
+            <div class="portfolio-card__badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+              Accepting first builds now
+            </div>
           </div>
         </div>
-        <div class="portfolio-item reveal reveal-delay-1">
-          <div class="portfolio-item__bg"></div>
-          <div class="portfolio-item__overlay">
-            <div class="portfolio-item__label">Cold Plunge System</div>
-            <div class="portfolio-item__caption">Park City — Wellness Retreat with Plunge + Sauna Combo</div>
-          </div>
-        </div>
-        <div class="portfolio-item reveal reveal-delay-2">
-          <div class="portfolio-item__bg"></div>
-          <div class="portfolio-item__overlay">
-            <div class="portfolio-item__label">Swim Spa</div>
-            <div class="portfolio-item__caption">Provo — Year-Round Swim Spa in a Compact Backyard</div>
-          </div>
-        </div>
-        <div class="portfolio-item reveal reveal-delay-1">
-          <div class="portfolio-item__bg"></div>
-          <div class="portfolio-item__overlay">
-            <div class="portfolio-item__label">Luxury Spa</div>
-            <div class="portfolio-item__caption">Draper — Elevated Hillside Spa with Mountain Views</div>
-          </div>
-        </div>
-        <div class="portfolio-item reveal reveal-delay-2">
-          <div class="portfolio-item__bg"></div>
-          <div class="portfolio-item__overlay">
-            <div class="portfolio-item__label">Backyard Transformation</div>
-            <div class="portfolio-item__caption">Sandy — Full Backyard Overhaul: Pool, Patio, Outdoor Kitchen</div>
-          </div>
-        </div>
-        <div class="portfolio-item reveal reveal-delay-3">
-          <div class="portfolio-item__bg"></div>
-          <div class="portfolio-item__overlay">
-            <div class="portfolio-item__label">Custom Geometric Pool</div>
-            <div class="portfolio-item__caption">Lehi — Modern Geometric with Sunshelf & LED Lighting</div>
-          </div>
-        </div>
+
       </div>
     </div>
   </section>
