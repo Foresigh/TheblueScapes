@@ -474,7 +474,7 @@
 
     /* ─── 4. BENEFITS ───────────────────────────────────── */
     .benefits {
-      background: var(--navy);
+      background: var(--white);
       position: relative;
       overflow: hidden;
     }
@@ -483,7 +483,7 @@
       position: absolute;
       top: -200px; right: -200px;
       width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(0,174,239,0.12) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(0,174,239,0.06) 0%, transparent 70%);
       pointer-events: none;
     }
     .benefits__inner {
@@ -508,7 +508,7 @@
     }
     .benefits__check {
       width: 24px; height: 24px;
-      background: rgba(0,174,239,0.18);
+      background: rgba(0,144,204,0.12);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -516,17 +516,17 @@
       flex-shrink: 0;
       margin-top: 2px;
     }
-    .benefits__check svg { width: 12px; height: 12px; color: var(--cyan-light); }
+    .benefits__check svg { width: 12px; height: 12px; color: var(--cyan-dark); }
     .benefits__list-text strong {
       display: block;
       font-size: 16px;
       font-weight: 600;
-      color: var(--white);
+      color: var(--navy);
       margin-bottom: 2px;
     }
     .benefits__list-text span {
       font-size: 14px;
-      color: rgba(255,255,255,0.60);
+      color: var(--text-mid);
     }
     .benefits__visual {
       position: relative;
@@ -730,7 +730,7 @@
 
     /* ─── 6. MID CTA ────────────────────────────────────── */
     .mid-cta {
-      background: var(--navy);
+      background: linear-gradient(135deg, #0078B8 0%, #00AEEF 50%, #33C3FF 100%);
       position: relative;
       overflow: hidden;
       padding: 80px 24px;
@@ -738,17 +738,17 @@
     .mid-cta::before {
       content: '';
       position: absolute;
-      top: -160px; left: -160px;
-      width: 520px; height: 520px;
-      background: radial-gradient(circle, rgba(0,174,239,0.13) 0%, transparent 70%);
+      top: -120px; left: -120px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(255,255,255,0.10) 0%, transparent 70%);
       pointer-events: none;
     }
     .mid-cta::after {
       content: '';
       position: absolute;
-      bottom: -120px; right: -120px;
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(0,174,239,0.08) 0%, transparent 70%);
+      bottom: -100px; right: -100px;
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%);
       pointer-events: none;
     }
     .mid-cta__inner {
@@ -766,9 +766,9 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(0,174,239,0.12);
-      border: 1px solid rgba(0,174,239,0.25);
-      color: var(--cyan-light);
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.30);
+      color: var(--white);
       font-size: 12px;
       font-weight: 700;
       letter-spacing: .1em;
@@ -788,7 +788,7 @@
     }
     .mid-cta__sub {
       font-size: 16px;
-      color: rgba(255,255,255,0.60);
+      color: rgba(255,255,255,0.85);
       line-height: 1.7;
       max-width: 520px;
       margin-bottom: 32px;
@@ -804,9 +804,9 @@
       gap: 6px;
       font-size: 13px;
       font-weight: 500;
-      color: rgba(255,255,255,0.55);
+      color: rgba(255,255,255,0.85);
     }
-    .mid-cta__trust-badge svg { width: 14px; height: 14px; color: var(--cyan); flex-shrink: 0; }
+    .mid-cta__trust-badge svg { width: 14px; height: 14px; color: #fff; flex-shrink: 0; }
     .mid-cta__right {
       display: flex;
       flex-direction: column;
@@ -815,12 +815,13 @@
       flex-shrink: 0;
     }
     .mid-cta__card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.30);
       border-radius: 20px;
       padding: 32px 36px;
       text-align: center;
       width: 260px;
+      backdrop-filter: blur(8px);
     }
     .mid-cta__card-stats {
       display: flex;
@@ -837,7 +838,7 @@
     }
     .mid-cta__stat-label {
       font-size: 11px;
-      color: rgba(255,255,255,0.40);
+      color: rgba(255,255,255,0.70);
       margin-top: 4px;
     }
     .mid-cta__divider {
@@ -1666,9 +1667,9 @@
     <div class="container">
       <div class="benefits__inner">
         <div class="benefits__content">
-          <div class="tag tag--white">Why BlueScapes</div>
-          <h2 class="headline headline--white">We Don't Just Build Pools.<br/>We Build <span class="accent">Memories.</span></h2>
-          <p class="subheadline subheadline--white">Any contractor can pour concrete. We craft experiences — and we back every project with decades of expertise and a team that's still around when you need us.</p>
+          <div class="tag">Why BlueScapes</div>
+          <h2 class="headline">We Don't Just Build Pools.<br/>We Build <span class="accent">Memories.</span></h2>
+          <p class="subheadline">Any contractor can pour concrete. We craft experiences — and we back every project with decades of expertise and a team that's still around when you need us.</p>
           <ul class="benefits__list">
             <li class="benefits__list-item">
               <div class="benefits__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
@@ -1864,11 +1865,11 @@
               <div class="mid-cta__stat-label">Projects Built</div>
             </div>
           </div>
-          <a href="#contact" class="btn btn--primary" style="width:100%;justify-content:center;font-size:15px;">
+          <a href="#contact" class="btn btn--dark" style="width:100%;justify-content:center;font-size:15px;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
             Get My Free Quote
           </a>
-          <div style="font-size:12px;color:rgba(255,255,255,0.30);margin-top:12px;">No spam. No pressure. Ever.</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.65);margin-top:12px;">No spam. No pressure. Ever.</div>
         </div>
       </div>
 
@@ -2006,7 +2007,7 @@
   <!-- ═══════════════════════════════════════════════════
        9. REVIEWS
   ═══════════════════════════════════════════════════ -->
-  <section class="section section--sky" id="testimonials">
+  <section class="section" id="testimonials">
     <div class="container">
       <div class="testimonials__header reveal">
         <div class="tag">Client Reviews</div>
