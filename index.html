@@ -666,59 +666,116 @@
     .mid-cta .btn--dark { font-size: 17px; padding: 18px 42px; }
 
     /* ─── 7. PROCESS ────────────────────────────────────── */
-    .process__header { text-align: center; margin-bottom: 60px; }
+    .process-section { background: var(--sky); padding: 90px 0; }
+    .process__header { text-align: center; margin-bottom: 64px; }
+    .process__header .subheadline { margin: 16px auto 0; }
+
     .process__steps {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(5, 1fr);
       gap: 0;
       position: relative;
+      align-items: start;
     }
-    .process__steps::before {
-      content: '';
+    .process__connector {
       position: absolute;
-      top: 40px; left: 10%; right: 10%;
+      top: 28px; left: calc(10% + 20px); right: calc(10% + 20px);
       height: 2px;
-      background: linear-gradient(90deg, var(--cyan) 0%, rgba(0,174,239,0.2) 100%);
+      background: linear-gradient(90deg, var(--cyan-dark), var(--cyan-light));
       z-index: 0;
     }
+    .process__connector::after {
+      content: '';
+      position: absolute;
+      right: -6px; top: -4px;
+      border: 5px solid transparent;
+      border-left: 8px solid var(--cyan-light);
+    }
+
     .process-step {
       display: flex;
       flex-direction: column;
       align-items: center;
-      text-align: center;
-      padding: 0 16px;
+      padding: 0 10px;
       position: relative;
       z-index: 1;
     }
-    .process-step__num {
-      width: 80px; height: 80px;
+    .process-step__bubble {
+      width: 58px; height: 58px;
       border-radius: 50%;
       background: var(--white);
-      border: 3px solid var(--cyan);
+      border: 2.5px solid var(--cyan);
       display: flex;
       align-items: center;
       justify-content: center;
+      margin-bottom: 28px;
+      box-shadow: 0 4px 20px rgba(0,174,239,0.20);
+      flex-shrink: 0;
+      transition: all .3s;
+    }
+    .process-step__bubble svg { width: 22px; height: 22px; color: var(--cyan-dark); }
+    .process-step:hover .process-step__bubble {
+      background: var(--cyan);
+      border-color: var(--cyan);
+      box-shadow: 0 6px 28px rgba(0,174,239,0.40);
+    }
+    .process-step:hover .process-step__bubble svg { color: #fff; }
+
+    .process-step__card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 22px 18px 20px;
+      border: 1px solid rgba(0,174,239,0.12);
+      border-left: 3px solid var(--cyan);
+      box-shadow: 0 2px 12px rgba(10,35,66,0.06);
+      position: relative;
+      overflow: hidden;
+      transition: all .3s;
+      width: 100%;
+    }
+    .process-step__card::before {
+      content: attr(data-num);
+      position: absolute;
+      top: -8px; right: 10px;
       font-family: 'Playfair Display', serif;
-      font-size: 26px;
+      font-size: 64px;
       font-weight: 800;
-      color: var(--navy);
-      margin-bottom: 24px;
-      box-shadow: 0 4px 20px rgba(0,174,239,0.25);
+      color: rgba(0,174,239,0.06);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .process-step:hover .process-step__card {
+      box-shadow: 0 8px 32px rgba(0,174,239,0.14);
+      border-color: rgba(0,174,239,0.25);
+      border-left-color: var(--cyan-dark);
+      transform: translateY(-3px);
+    }
+    .process-step__label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--cyan-dark);
+      margin-bottom: 6px;
     }
     .process-step__title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--navy);
       margin-bottom: 8px;
+      line-height: 1.3;
     }
     .process-step__desc {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-mid);
-      line-height: 1.6;
+      line-height: 1.65;
     }
-    @media (max-width: 640px) {
-      .process__steps { grid-template-columns: 1fr; gap: 36px; }
-      .process__steps::before { display: none; }
+    @media (max-width: 860px) {
+      .process__steps { grid-template-columns: 1fr; gap: 16px; }
+      .process__connector { display: none; }
+      .process-step { align-items: flex-start; flex-direction: row; gap: 16px; }
+      .process-step__bubble { margin-bottom: 0; flex-shrink: 0; }
+      .process-step__card { flex: 1; }
     }
 
     /* ─── 8. TESTIMONIALS ───────────────────────────────── */
@@ -1483,39 +1540,71 @@
   <!-- ═══════════════════════════════════════════════════
        7. PROCESS
   ═══════════════════════════════════════════════════ -->
-  <section class="section" id="process">
+  <section class="process-section" id="process">
     <div class="container">
       <div class="process__header reveal">
         <div class="tag">How It Works</div>
         <h2 class="headline">From Vision to <span class="accent">Reality</span> in 5 Simple Steps</h2>
-        <p class="subheadline" style="margin:16px auto 0;">Backed by 60+ years of combined team expertise, our process is smooth, transparent, and stress-free — from your first call to your first swim.</p>
+        <p class="subheadline">Backed by 60+ years of combined team expertise, our process is smooth, transparent, and stress-free — from your first call to your first swim.</p>
       </div>
       <div class="process__steps">
+        <div class="process__connector"></div>
+
         <div class="process-step reveal reveal-delay-1">
-          <div class="process-step__num">1</div>
-          <h4 class="process-step__title">Free Consultation</h4>
-          <p class="process-step__desc">We visit your property, listen to your vision, and answer every question — zero pressure, zero obligation.</p>
+          <div class="process-step__bubble">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <div class="process-step__card" data-num="01">
+            <div class="process-step__label">Step 01</div>
+            <h4 class="process-step__title">Free Consultation</h4>
+            <p class="process-step__desc">We visit your property, listen to your vision, and answer every question — zero pressure, zero obligation.</p>
+          </div>
         </div>
+
         <div class="process-step reveal reveal-delay-2">
-          <div class="process-step__num">2</div>
-          <h4 class="process-step__title">3D Design</h4>
-          <p class="process-step__desc">Our designers create a photorealistic 3D render so you can see exactly what your backyard will look like before we begin.</p>
+          <div class="process-step__bubble">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <div class="process-step__card" data-num="02">
+            <div class="process-step__label">Step 02</div>
+            <h4 class="process-step__title">3D Design</h4>
+            <p class="process-step__desc">Our designers create a photorealistic 3D render so you can see your exact backyard before a single shovel breaks ground.</p>
+          </div>
         </div>
+
         <div class="process-step reveal reveal-delay-3">
-          <div class="process-step__num">3</div>
-          <h4 class="process-step__title">Clear Proposal</h4>
-          <p class="process-step__desc">You receive a detailed, itemized proposal with transparent pricing. No surprises, no hidden costs — ever.</p>
+          <div class="process-step__bubble">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          </div>
+          <div class="process-step__card" data-num="03">
+            <div class="process-step__label">Step 03</div>
+            <h4 class="process-step__title">Clear Proposal</h4>
+            <p class="process-step__desc">Detailed, itemized pricing — no surprises, no hidden costs. Your quote is your contract, plain and simple.</p>
+          </div>
         </div>
+
         <div class="process-step reveal reveal-delay-2">
-          <div class="process-step__num">4</div>
-          <h4 class="process-step__title">Expert Build</h4>
-          <p class="process-step__desc">Our in-house crew gets to work. We handle permits, scheduling, and keep you updated every step of the way.</p>
+          <div class="process-step__bubble">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div class="process-step__card" data-num="04">
+            <div class="process-step__label">Step 04</div>
+            <h4 class="process-step__title">Expert Build</h4>
+            <p class="process-step__desc">Our in-house crew handles everything — permits, scheduling, and daily updates — start to finish, no subcontractors.</p>
+          </div>
         </div>
+
         <div class="process-step reveal reveal-delay-3">
-          <div class="process-step__num">5</div>
-          <h4 class="process-step__title">Your First Swim</h4>
-          <p class="process-step__desc">We walk you through everything, hand over the keys, and you enjoy your new backyard paradise — starting today.</p>
+          <div class="process-step__bubble">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+          </div>
+          <div class="process-step__card" data-num="05">
+            <div class="process-step__label">Step 05</div>
+            <h4 class="process-step__title">Your First Swim</h4>
+            <p class="process-step__desc">We walk you through everything, hand over the keys, and you enjoy your new backyard paradise — starting today.</p>
+          </div>
         </div>
+
       </div>
     </div>
   </section>
