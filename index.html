@@ -908,6 +908,39 @@
     .testimonial-card__name { font-size: 14px; font-weight: 700; color: var(--navy); }
     .testimonial-card__role { font-size: 12px; color: var(--text-light); margin-top: 2px; }
 
+    /* Rating summary */
+    .rating-summary {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      background: var(--white);
+      border: 1px solid rgba(0,174,239,0.14);
+      border-radius: var(--radius-lg);
+      padding: 28px 36px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-card);
+      flex-wrap: wrap;
+    }
+    .rating-summary__score {
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .rating-summary__num {
+      font-family: 'Playfair Display', serif;
+      font-size: 56px;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1;
+    }
+    .rating-summary__stars { color: #F59E0B; font-size: 20px; letter-spacing: 2px; margin: 6px 0 4px; }
+    .rating-summary__count { font-size: 13px; color: var(--text-light); }
+    .rating-summary__bars { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px; }
+    .rating-bar { display: flex; align-items: center; gap: 10px; }
+    .rating-bar__label { font-size: 12px; font-weight: 600; color: var(--text-mid); width: 18px; text-align: right; flex-shrink: 0; }
+    .rating-bar__track { flex: 1; height: 8px; background: rgba(0,174,239,0.10); border-radius: 4px; overflow: hidden; }
+    .rating-bar__fill { height: 100%; background: linear-gradient(90deg, var(--cyan-dark), var(--cyan-light)); border-radius: 4px; transition: width .6s ease; }
+    .rating-bar__count { font-size: 12px; color: var(--text-light); width: 20px; flex-shrink: 0; }
+
     /* Review submission form */
     .review-form-wrap {
       max-width: 640px;
@@ -1848,6 +1881,16 @@
         <p class="subheadline" style="margin:16px auto 0;">Every project gets our full attention. If you've worked with us, we'd love to hear about your experience.</p>
       </div>
 
+      <!-- Rating summary (shown when reviews exist) -->
+      <div class="rating-summary reveal" id="ratingSummary" style="display:none;">
+        <div class="rating-summary__score">
+          <div class="rating-summary__num" id="avgScore">—</div>
+          <div class="rating-summary__stars" id="avgStars">★★★★★</div>
+          <div class="rating-summary__count" id="reviewCount">0 reviews</div>
+        </div>
+        <div class="rating-summary__bars" id="ratingBars"></div>
+      </div>
+
       <!-- Approved reviews render here -->
       <div class="testimonials__grid" id="testimonialsGrid" style="display:none;"></div>
 
@@ -2308,11 +2351,36 @@
 
     // ── Testimonials ──────────────────────────────────────
     (function loadTestimonials() {
-      fetch('/api/testimonials').then(r => r.json()).then(rows => {
-        if (!rows.length) return;
+      fetch('/api/testimonials').then(r => r.json()).then(({ reviews, stats }) => {
+        if (!reviews || !reviews.length) return;
+
+        // Summary panel
+        const s = stats;
+        document.getElementById('ratingSummary').style.display = 'flex';
+        document.getElementById('avgScore').textContent = s.average ?? '—';
+        const full = Math.round(s.average);
+        document.getElementById('avgStars').textContent = '★'.repeat(full) + '☆'.repeat(5 - full);
+        document.getElementById('reviewCount').textContent = `Based on ${s.total} review${s.total !== 1 ? 's' : ''}`;
+        const breakdown = [
+          { label: '5★', count: s.five },
+          { label: '4★', count: s.four },
+          { label: '3★', count: s.three },
+          { label: '2★', count: s.two },
+          { label: '1★', count: s.one },
+        ];
+        document.getElementById('ratingBars').innerHTML = breakdown.map(b => {
+          const pct = s.total > 0 ? Math.round((b.count / s.total) * 100) : 0;
+          return `<div class="rating-bar">
+            <div class="rating-bar__label">${b.label.replace('★','')}</div>
+            <div class="rating-bar__track"><div class="rating-bar__fill" style="width:${pct}%"></div></div>
+            <div class="rating-bar__count">${b.count}</div>
+          </div>`;
+        }).join('');
+
+        // Review cards
         const grid = document.getElementById('testimonialsGrid');
         grid.style.display = 'grid';
-        grid.innerHTML = rows.map(t => {
+        grid.innerHTML = reviews.map(t => {
           const stars = '★'.repeat(t.rating) + '☆'.repeat(5 - t.rating);
           const initial = t.name.trim().charAt(0).toUpperCase();
           return `<div class="testimonial-card">

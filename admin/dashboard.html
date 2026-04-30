@@ -1175,6 +1175,11 @@ async function loadTestimonials() {
   try {
     const res  = await authFetch('/admin/api/testimonials');
     const rows = await res.json();
+    // Show quick summary
+    const approved = rows.filter(r => r.status === 'approved');
+    const avg = approved.length ? (approved.reduce((a,b) => a + b.rating, 0) / approved.length).toFixed(1) : '—';
+    document.querySelector('#view-testimonials > div:first-child > div:first-child > div:last-child').textContent =
+      `${rows.length} total · ${approved.length} approved · avg ${avg}★`;
     const el   = $('testimonialsAdmin');
     if (!rows.length) {
       el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-light);font-size:14px;">No reviews submitted yet.</div>';

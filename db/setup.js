@@ -266,10 +266,23 @@ async function insertTestimonial({ name, role, rating, message }) {
 }
 
 async function getApprovedTestimonials() {
-  const { rows } = await pool.query(
-    `SELECT id, created_at, name, role, rating, message FROM testimonials WHERE status='approved' ORDER BY created_at DESC`
-  );
-  return rows;
+  const [reviews, stats] = await Promise.all([
+    pool.query(
+      `SELECT id, created_at, name, role, rating, message FROM testimonials WHERE status='approved' ORDER BY created_at DESC`
+    ),
+    pool.query(`
+      SELECT
+        COUNT(*)::int                                        AS total,
+        ROUND(AVG(rating)::numeric, 1)::float               AS average,
+        COUNT(*) FILTER (WHERE rating=5)::int               AS five,
+        COUNT(*) FILTER (WHERE rating=4)::int               AS four,
+        COUNT(*) FILTER (WHERE rating=3)::int               AS three,
+        COUNT(*) FILTER (WHERE rating=2)::int               AS two,
+        COUNT(*) FILTER (WHERE rating=1)::int               AS one
+      FROM testimonials WHERE status='approved'
+    `),
+  ]);
+  return { reviews: reviews.rows, stats: stats.rows[0] };
 }
 
 async function getAllTestimonials() {
