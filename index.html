@@ -371,6 +371,20 @@
     }
 
     /* ─── 3. SERVICES ───────────────────────────────────── */
+    .services-dark {
+      background: var(--navy);
+      padding: 90px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .services-dark::before {
+      content: '';
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,174,239,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
     .services__header {
       text-align: center;
       margin-bottom: 60px;
@@ -380,62 +394,80 @@
     }
     .services__grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
     }
     .service-card {
-      background: var(--white);
-      border: 1px solid rgba(0,174,239,0.14);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: var(--radius-lg);
-      padding: 36px 28px;
-      transition: all .3s ease;
+      padding: 40px 32px 34px;
       position: relative;
       overflow: hidden;
+      transition: all .35s ease;
+      cursor: default;
     }
     .service-card::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 3px;
-      background: var(--gradient-cta);
-      opacity: 0;
-      transition: opacity .3s;
+      background: linear-gradient(90deg, var(--cyan-dark), var(--cyan-light));
+      transform: scaleX(0.25);
+      transform-origin: left;
+      transition: transform .4s ease;
     }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-card__num {
+      position: absolute;
+      top: 12px; right: 22px;
+      font-family: 'Playfair Display', serif;
+      font-size: 80px;
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(255,255,255,0.04);
+      transition: color .35s;
+      pointer-events: none;
+    }
+    .service-card:hover .service-card__num { color: rgba(0,174,239,0.08); }
     .service-card:hover {
       transform: translateY(-6px);
-      box-shadow: 0 16px 48px rgba(0,174,239,0.16);
-      border-color: rgba(0,174,239,0.35);
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(0,174,239,0.30);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,174,239,0.12);
     }
-    .service-card:hover::before { opacity: 1; }
     .service-card__icon {
-      width: 56px; height: 56px;
-      background: rgba(0,174,239,0.10);
+      width: 54px; height: 54px;
+      background: rgba(0,174,239,0.12);
       border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 20px;
-      font-size: 28px;
+      margin-bottom: 24px;
+      transition: background .35s;
     }
+    .service-card__icon svg { width: 26px; height: 26px; color: var(--cyan); }
+    .service-card:hover .service-card__icon { background: rgba(0,174,239,0.22); }
     .service-card__title {
-      font-size: 19px;
+      font-size: 20px;
       font-weight: 700;
-      color: var(--navy);
-      margin-bottom: 10px;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: -.02em;
     }
     .service-card__desc {
       font-size: 15px;
-      color: var(--text-mid);
-      line-height: 1.65;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.7;
+      margin-bottom: 24px;
     }
     .service-card__link {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      margin-top: 18px;
       font-size: 14px;
       font-weight: 600;
-      color: var(--cyan-dark);
+      color: var(--cyan);
       transition: gap .2s;
     }
     .service-card:hover .service-card__link { gap: 10px; }
@@ -1242,41 +1274,69 @@
   <!-- ═══════════════════════════════════════════════════
        3. SERVICES
   ═══════════════════════════════════════════════════ -->
-  <section class="section" id="services">
+  <section class="services-dark" id="services">
     <div class="container">
       <div class="services__header reveal">
-        <div class="tag">What We Build</div>
-        <h2 class="headline">Crafted for the Way <span class="accent">You Live</span></h2>
-        <p class="subheadline">Every BlueScapes project is designed around your lifestyle — not a template. Here's what we build for Utah homeowners.</p>
+        <div class="tag tag--white">What We Build</div>
+        <h2 class="headline headline--white">Crafted for the Way <span class="accent">You Live</span></h2>
+        <p class="subheadline subheadline--white">Every BlueScapes project is designed around your lifestyle — not a template. Here's what we build for Utah homeowners.</p>
       </div>
       <div class="services__grid">
 
         <div class="service-card reveal reveal-delay-1">
-          <div class="service-card__icon">🏊</div>
+          <div class="service-card__num">01</div>
+          <div class="service-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M2 12c1.5-2 3-3 4.5-3s3 2 4.5 2 3-3 4.5-3 3 1 4.5 3"/>
+              <path d="M2 17c1.5-2 3-3 4.5-3s3 2 4.5 2 3-3 4.5-3 3 1 4.5 3"/>
+              <rect x="6" y="2" width="12" height="7" rx="2"/>
+            </svg>
+          </div>
           <h3 class="service-card__title">Custom Pools</h3>
           <p class="service-card__desc">Not a catalog pool — your pool. We design from scratch around your yard, your style, and your vision, from sleek geometric to freeform resort-style.</p>
-          <span class="service-card__link">Learn more →</span>
+          <span class="service-card__link">Get a quote →</span>
         </div>
 
         <div class="service-card reveal reveal-delay-2">
-          <div class="service-card__icon">♨️</div>
+          <div class="service-card__num">02</div>
+          <div class="service-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M8 3v2m4-2v2m4-2v2"/>
+              <path d="M5 10h14a1 1 0 011 1v5a4 4 0 01-4 4H8a4 4 0 01-4-4v-5a1 1 0 011-1z"/>
+              <path d="M2 15c1.5-2 3-2 4.5 0s3 2 4.5 0 3-2 4.5 0 3 2 4.5 0"/>
+            </svg>
+          </div>
           <h3 class="service-card__title">Luxury Spas</h3>
           <p class="service-card__desc">Melt away the day. Our in-ground spas are built with premium jets, mood lighting, and seamless pool integration — your private retreat, year-round.</p>
-          <span class="service-card__link">Learn more →</span>
+          <span class="service-card__link">Get a quote →</span>
         </div>
 
         <div class="service-card reveal reveal-delay-3">
-          <div class="service-card__icon">🌊</div>
+          <div class="service-card__num">03</div>
+          <div class="service-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <circle cx="12" cy="6" r="2"/>
+              <path d="M12 8v5l3 3"/>
+              <path d="M3 17c1.5-2 3-3 4.5-3s3 2 4.5 2 3-3 4.5-3 3 1 4.5 3"/>
+              <path d="M3 21c1.5-2 3-3 4.5-3s3 2 4.5 2 3-3 4.5-3 3 1 4.5 3"/>
+            </svg>
+          </div>
           <h3 class="service-card__title">Swim Spas</h3>
           <p class="service-card__desc">Swim, train, and relax in one compact system. Perfect for smaller yards that demand big experiences — all four seasons in Utah.</p>
-          <span class="service-card__link">Learn more →</span>
+          <span class="service-card__link">Get a quote →</span>
         </div>
 
-        <div class="service-card reveal reveal-delay-1">
-          <div class="service-card__icon">❄️</div>
+        <div class="service-card reveal reveal-delay-4">
+          <div class="service-card__num">04</div>
+          <div class="service-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+              <circle cx="12" cy="12" r="4"/>
+            </svg>
+          </div>
           <h3 class="service-card__title">Cold Plunge Systems</h3>
           <p class="service-card__desc">Recovery, clarity, energy. Our cold plunge installations are custom-built for athletes, biohackers, and anyone serious about feeling their best every day.</p>
-          <span class="service-card__link">Learn more →</span>
+          <span class="service-card__link">Get a quote →</span>
         </div>
 
       </div>
