@@ -872,11 +872,12 @@
     }
 
     /* ─── 8. TESTIMONIALS ───────────────────────────────── */
-    .testimonials__header { text-align: center; margin-bottom: 56px; }
+    .testimonials__header { text-align: center; margin-bottom: 48px; }
     .testimonials__grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 24px;
+      margin-bottom: 56px;
     }
     .testimonial-card {
       background: var(--white);
@@ -892,47 +893,86 @@
       top: 20px; right: 28px;
       font-family: 'Playfair Display', serif;
       font-size: 80px;
-      color: rgba(0,174,239,0.12);
+      color: rgba(0,174,239,0.10);
       line-height: 1;
     }
-    .testimonial-card__stars {
-      color: #FFD700;
-      font-size: 18px;
-      margin-bottom: 16px;
-      letter-spacing: 3px;
-    }
-    .testimonial-card__quote {
-      font-size: 16px;
-      line-height: 1.75;
-      color: var(--text-mid);
-      margin-bottom: 24px;
-      font-style: italic;
-    }
-    .testimonial-card__author {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+    .testimonial-card__stars { color: #F59E0B; font-size: 16px; margin-bottom: 14px; letter-spacing: 2px; }
+    .testimonial-card__quote { font-size: 15px; line-height: 1.75; color: var(--text-mid); margin-bottom: 22px; font-style: italic; }
+    .testimonial-card__author { display: flex; align-items: center; gap: 12px; }
     .testimonial-card__avatar {
-      width: 48px; height: 48px;
-      border-radius: 50%;
+      width: 44px; height: 44px; border-radius: 50%;
       background: var(--gradient-cta);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--white);
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0;
     }
-    .testimonial-card__name {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--navy);
+    .testimonial-card__name { font-size: 14px; font-weight: 700; color: var(--navy); }
+    .testimonial-card__role { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+
+    /* Review submission form */
+    .review-form-wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(0,174,239,0.14);
+      box-shadow: 0 4px 28px rgba(10,35,66,0.08);
+      padding: 40px 44px;
     }
-    .testimonial-card__location {
-      font-size: 13px;
-      color: var(--text-light);
+    .review-form-wrap h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px; font-weight: 800;
+      color: var(--navy); margin-bottom: 6px;
+    }
+    .review-form-wrap p { font-size: 14px; color: var(--text-light); margin-bottom: 28px; }
+    .star-picker { display: flex; gap: 6px; margin-bottom: 22px; }
+    .star-picker input { display: none; }
+    .star-picker label {
+      font-size: 28px; cursor: pointer; color: #D1D5DB;
+      transition: color .15s; line-height: 1;
+    }
+    .star-picker input:checked ~ label,
+    .star-picker label:hover,
+    .star-picker label:hover ~ label { color: #D1D5DB; }
+    .star-picker label:hover,
+    .star-picker input:checked + label,
+    .star-picker label:has(~ input:checked) { color: #F59E0B; }
+    /* simpler JS-driven approach */
+    .star-picker label.active { color: #F59E0B; }
+    .review-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .review-field { display: flex; flex-direction: column; gap: 5px; }
+    .review-field label { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-mid); }
+    .review-field input, .review-field textarea {
+      padding: 11px 14px;
+      border: 1.5px solid rgba(10,35,66,0.12);
+      border-radius: 9px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px; color: var(--navy);
+      background: var(--offwhite);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .review-field input:focus, .review-field textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(0,174,239,0.10);
+    }
+    .review-field textarea { resize: vertical; min-height: 110px; }
+    .review-success {
+      display: none;
+      text-align: center;
+      padding: 32px 0 8px;
+    }
+    .review-success__icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(16,185,129,0.12);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .review-success__icon svg { width: 28px; height: 28px; color: #10b981; }
+    .review-success h4 { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .review-success p { font-size: 14px; color: var(--text-light); margin: 0; }
+    @media (max-width: 600px) {
+      .review-form-wrap { padding: 28px 22px; }
+      .review-row { grid-template-columns: 1fr; }
     }
 
     /* ─── 9. CONTACT FORM ───────────────────────────────── */
@@ -1798,29 +1838,67 @@
   </section>
 
   <!-- ═══════════════════════════════════════════════════
-       9. REVIEWS CTA
+       9. REVIEWS
   ═══════════════════════════════════════════════════ -->
   <section class="section section--sky" id="testimonials">
     <div class="container">
-      <div class="testimonials__header reveal" style="text-align:center;">
-        <div class="tag">Reviews</div>
-        <h2 class="headline">Be Our First <span class="accent">Review</span></h2>
-        <p class="subheadline" style="margin:16px auto 0; text-align:center;">
-          We're just getting started and every project gets our full attention. If you've worked with us, we'd love to hear about your experience.
-        </p>
+      <div class="testimonials__header reveal">
+        <div class="tag">Client Reviews</div>
+        <h2 class="headline">What Our Clients <span class="accent">Are Saying</span></h2>
+        <p class="subheadline" style="margin:16px auto 0;">Every project gets our full attention. If you've worked with us, we'd love to hear about your experience.</p>
       </div>
-      <div class="reveal" style="display:flex; flex-direction:column; align-items:center; gap:24px; margin-top:16px;">
-        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:16px;">
-          <a href="https://g.page/r/bluescapesutah/review" target="_blank" rel="noopener" class="btn btn--primary" style="font-size:16px; padding:16px 36px;">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-            Leave a Google Review
-          </a>
-          <a href="https://www.facebook.com/bluescapesutah/reviews" target="_blank" rel="noopener" class="btn btn--dark" style="font-size:16px; padding:16px 36px;">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
-            Review on Facebook
-          </a>
+
+      <!-- Approved reviews render here -->
+      <div class="testimonials__grid" id="testimonialsGrid" style="display:none;"></div>
+
+      <!-- Submission form -->
+      <div class="review-form-wrap reveal">
+        <h3>Share Your Experience</h3>
+        <p>Already a BlueScapes client? Your honest feedback means the world to us — and helps future homeowners make confident decisions.</p>
+
+        <div id="reviewForm">
+          <div style="margin-bottom:18px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-mid);margin-bottom:8px;">Your Rating</div>
+            <div class="star-picker" id="starPicker">
+              <label data-val="1">★</label>
+              <label data-val="2">★</label>
+              <label data-val="3">★</label>
+              <label data-val="4">★</label>
+              <label data-val="5" class="active">★</label>
+            </div>
+            <input type="hidden" id="ratingVal" value="5"/>
+          </div>
+
+          <div class="review-row">
+            <div class="review-field">
+              <label for="revName">Your Name *</label>
+              <input type="text" id="revName" placeholder="Jane Smith" required/>
+            </div>
+            <div class="review-field">
+              <label for="revRole">How You Know Us</label>
+              <input type="text" id="revRole" placeholder="Pool installation client"/>
+            </div>
+          </div>
+
+          <div class="review-field" style="margin-bottom:20px;">
+            <label for="revMsg">Your Review *</label>
+            <textarea id="revMsg" placeholder="Tell us about your experience with BlueScapes…" required></textarea>
+          </div>
+
+          <button class="btn btn--primary" id="revSubmitBtn" style="width:100%;justify-content:center;" onclick="submitReview()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+            Submit My Review
+          </button>
+          <div style="font-size:12px;color:var(--text-light);text-align:center;margin-top:10px;">Reviews are reviewed before publishing — we read every one.</div>
         </div>
-        <p style="font-size:13px; color:var(--text-light);">Already a BlueScapes client? Your honest feedback means the world to us.</p>
+
+        <div class="review-success" id="reviewSuccess">
+          <div class="review-success__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <h4>Thank you!</h4>
+          <p>Your review has been submitted and is pending approval. We truly appreciate you taking the time.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -2227,6 +2305,68 @@
     fetch('/api/settings').then(r => r.json()).then(s => {
       if (s.under_construction) document.getElementById('ucBanner').classList.add('visible');
     }).catch(() => {});
+
+    // ── Testimonials ──────────────────────────────────────
+    (function loadTestimonials() {
+      fetch('/api/testimonials').then(r => r.json()).then(rows => {
+        if (!rows.length) return;
+        const grid = document.getElementById('testimonialsGrid');
+        grid.style.display = 'grid';
+        grid.innerHTML = rows.map(t => {
+          const stars = '★'.repeat(t.rating) + '☆'.repeat(5 - t.rating);
+          const initial = t.name.trim().charAt(0).toUpperCase();
+          return `<div class="testimonial-card">
+            <div class="testimonial-card__stars">${stars}</div>
+            <p class="testimonial-card__quote">${t.message}</p>
+            <div class="testimonial-card__author">
+              <div class="testimonial-card__avatar">${initial}</div>
+              <div>
+                <div class="testimonial-card__name">${t.name}</div>
+                ${t.role ? `<div class="testimonial-card__role">${t.role}</div>` : ''}
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+      }).catch(() => {});
+    })();
+
+    // Star picker
+    document.querySelectorAll('#starPicker label').forEach(label => {
+      label.addEventListener('click', () => {
+        const val = parseInt(label.dataset.val);
+        document.getElementById('ratingVal').value = val;
+        document.querySelectorAll('#starPicker label').forEach(l => {
+          l.classList.toggle('active', parseInt(l.dataset.val) <= val);
+        });
+      });
+    });
+
+    async function submitReview() {
+      const btn  = document.getElementById('revSubmitBtn');
+      const name = document.getElementById('revName').value.trim();
+      const role = document.getElementById('revRole').value.trim();
+      const msg  = document.getElementById('revMsg').value.trim();
+      const rating = document.getElementById('ratingVal').value;
+      if (!name || !msg) { alert('Please fill in your name and review.'); return; }
+      btn.disabled = true; btn.textContent = 'Submitting…';
+      try {
+        const res = await fetch('/api/testimonial', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, role, rating, message: msg }),
+        });
+        if (res.ok) {
+          document.getElementById('reviewForm').style.display = 'none';
+          document.getElementById('reviewSuccess').style.display = 'block';
+        } else {
+          btn.disabled = false; btn.textContent = 'Submit My Review';
+          alert('Something went wrong — please try again.');
+        }
+      } catch {
+        btn.disabled = false; btn.textContent = 'Submit My Review';
+        alert('Something went wrong — please try again.');
+      }
+    }
 
     // ── Scroll Reveal ─────────────────────────────────────
     const revealObserver = new IntersectionObserver((entries) => {

@@ -38,6 +38,19 @@ async function init() {
   // Add user_agent column to existing tables without it
   await pool.query(`ALTER TABLE events ADD COLUMN IF NOT EXISTS user_agent TEXT DEFAULT ''`);
 
+  // Testimonials table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS testimonials (
+      id         SERIAL PRIMARY KEY,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      name       TEXT NOT NULL,
+      role       TEXT DEFAULT '',
+      rating     INT  DEFAULT 5,
+      message    TEXT NOT NULL,
+      status     TEXT DEFAULT 'pending'
+    )
+  `);
+
   // Settings table (key/value)
   await pool.query(`
     CREATE TABLE IF NOT EXISTS settings (
@@ -243,4 +256,33 @@ async function setSetting(key, value) {
   );
 }
 
-module.exports = { init, insertLead, queryLeads, updateLead, deleteLead, getStats, getAnalytics, insertEvent, getTopIPs, getSetting, setSetting };
+// ── Testimonials ──────────────────────────────────────────
+async function insertTestimonial({ name, role, rating, message }) {
+  const { rows } = await pool.query(
+    `INSERT INTO testimonials (name, role, rating, message) VALUES ($1,$2,$3,$4) RETURNING id`,
+    [name, role || '', Math.min(5, Math.max(1, parseInt(rating) || 5)), message]
+  );
+  return rows[0];
+}
+
+async function getApprovedTestimonials() {
+  const { rows } = await pool.query(
+    `SELECT id, created_at, name, role, rating, message FROM testimonials WHERE status='approved' ORDER BY created_at DESC`
+  );
+  return rows;
+}
+
+async function getAllTestimonials() {
+  const { rows } = await pool.query(`SELECT * FROM testimonials ORDER BY created_at DESC`);
+  return rows;
+}
+
+async function updateTestimonialStatus(id, status) {
+  await pool.query(`UPDATE testimonials SET status=$1 WHERE id=$2`, [status, id]);
+}
+
+async function deleteTestimonial(id) {
+  await pool.query(`DELETE FROM testimonials WHERE id=$1`, [id]);
+}
+
+module.exports = { init, insertLead, queryLeads, updateLead, deleteLead, getStats, getAnalytics, insertEvent, getTopIPs, getSetting, setSetting, insertTestimonial, getApprovedTestimonials, getAllTestimonials, updateTestimonialStatus, deleteTestimonial };

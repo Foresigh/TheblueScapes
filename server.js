@@ -62,6 +62,27 @@ app.get('/api/settings', async (req, res) => {
   }
 });
 
+// ── Public: Approved Testimonials ────────────────────────
+app.get('/api/testimonials', async (req, res) => {
+  try {
+    const rows = await db.getApprovedTestimonials();
+    res.json(rows);
+  } catch { res.json([]); }
+});
+
+// ── Public: Submit Testimonial ────────────────────────────
+app.post('/api/testimonial', async (req, res) => {
+  const { name, role, rating, message } = req.body;
+  if (!name || !message) return res.status(400).json({ error: 'Name and message required' });
+  try {
+    const t = await db.insertTestimonial({ name, role, rating, message });
+    res.json({ success: true, id: t.id });
+  } catch (err) {
+    console.error('insertTestimonial error:', err.message);
+    res.status(500).json({ error: 'Could not save testimonial' });
+  }
+});
+
 // ── Public: Lead Capture ──────────────────────────────────
 app.post('/api/contact', async (req, res) => {
   const { first_name, last_name, email, phone, project_type, message,
@@ -140,6 +161,21 @@ app.patch('/admin/api/leads/:id', requireAuth, async (req, res) => {
 
 app.delete('/admin/api/leads/:id', requireAuth, async (req, res) => {
   await db.deleteLead(req.params.id);
+  res.json({ success: true });
+});
+
+app.get('/admin/api/testimonials', requireAuth, async (req, res) => {
+  const rows = await db.getAllTestimonials();
+  res.json(rows);
+});
+
+app.patch('/admin/api/testimonials/:id', requireAuth, async (req, res) => {
+  await db.updateTestimonialStatus(req.params.id, req.body.status);
+  res.json({ success: true });
+});
+
+app.delete('/admin/api/testimonials/:id', requireAuth, async (req, res) => {
+  await db.deleteTestimonial(req.params.id);
   res.json({ success: true });
 });
 
