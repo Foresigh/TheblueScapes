@@ -1602,13 +1602,6 @@
 
         <div class="service-card reveal reveal-delay-1">
           <div class="service-card__num">01</div>
-          <div class="service-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-              <path d="M2 12c1.5-2 3-3 4.5-3s3 2 4.5 2 3-3 4.5-3 3 1 4.5 3"/>
-              <path d="M2 17c1.5-2 3-3 4.5-3s3 2 4.5 2 3-3 4.5-3 3 1 4.5 3"/>
-              <rect x="6" y="2" width="12" height="7" rx="2"/>
-            </svg>
-          </div>
           <h3 class="service-card__title">Custom Pools</h3>
           <p class="service-card__desc">Not a catalog pool — your pool. We design from scratch around your yard, your style, and your vision, from sleek geometric to freeform resort-style.</p>
           <a href="#contact" class="service-card__link">Get a quote →</a>
@@ -1616,13 +1609,6 @@
 
         <div class="service-card reveal reveal-delay-2">
           <div class="service-card__num">02</div>
-          <div class="service-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-              <path d="M8 3v2m4-2v2m4-2v2"/>
-              <path d="M5 10h14a1 1 0 011 1v5a4 4 0 01-4 4H8a4 4 0 01-4-4v-5a1 1 0 011-1z"/>
-              <path d="M2 15c1.5-2 3-2 4.5 0s3 2 4.5 0 3-2 4.5 0 3 2 4.5 0"/>
-            </svg>
-          </div>
           <h3 class="service-card__title">Luxury Spas</h3>
           <p class="service-card__desc">Melt away the day. Our in-ground spas are built with premium jets, mood lighting, and seamless pool integration — your private retreat, year-round.</p>
           <a href="#contact" class="service-card__link">Get a quote →</a>
@@ -1630,14 +1616,6 @@
 
         <div class="service-card reveal reveal-delay-3">
           <div class="service-card__num">03</div>
-          <div class="service-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-              <circle cx="12" cy="6" r="2"/>
-              <path d="M12 8v5l3 3"/>
-              <path d="M3 17c1.5-2 3-3 4.5-3s3 2 4.5 2 3-3 4.5-3 3 1 4.5 3"/>
-              <path d="M3 21c1.5-2 3-3 4.5-3s3 2 4.5 2 3-3 4.5-3 3 1 4.5 3"/>
-            </svg>
-          </div>
           <h3 class="service-card__title">Swim Spas</h3>
           <p class="service-card__desc">Swim, train, and relax in one compact system. Perfect for smaller yards that demand big experiences — all four seasons in Utah.</p>
           <a href="#contact" class="service-card__link">Get a quote →</a>
@@ -1645,12 +1623,6 @@
 
         <div class="service-card reveal reveal-delay-4">
           <div class="service-card__num">04</div>
-          <div class="service-card__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-              <circle cx="12" cy="12" r="4"/>
-            </svg>
-          </div>
           <h3 class="service-card__title">Cold Plunge Systems</h3>
           <p class="service-card__desc">Recovery, clarity, energy. Our cold plunge installations are custom-built for athletes, biohackers, and anyone serious about feeling their best every day.</p>
           <a href="#contact" class="service-card__link">Get a quote →</a>
@@ -2192,6 +2164,16 @@
                   <label class="radio-item"><input type="radio" name="pool_size" value="400-600 sq ft" /> 400–600 sq ft</label>
                   <label class="radio-item"><input type="radio" name="pool_size" value="600-800 sq ft" /> 600–800 sq ft</label>
                   <label class="radio-item"><input type="radio" name="pool_size" value="800+ sq ft" /> 800+ sq ft</label>
+                </div>
+                <div class="form-row" style="margin-bottom:18px;">
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label for="pool_length">Length (ft)</label>
+                    <input type="number" id="pool_length" name="pool_length" min="1" placeholder="e.g. 30" />
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label for="pool_width">Width (ft)</label>
+                    <input type="number" id="pool_width" name="pool_width" min="1" placeholder="e.g. 15" />
+                  </div>
                 </div>
                 <div class="form-section-head">Features Desired</div>
                 <div class="check-grid" style="margin-bottom:14px;">
