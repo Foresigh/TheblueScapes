@@ -370,6 +370,70 @@
       .trust-bar__item:nth-child(odd) { border-right: 1px solid rgba(0,174,239,0.12); }
     }
 
+    /* ─── 2b. QUICK LINKS ───────────────────────────────── */
+    .quick-links {
+      background: var(--navy);
+      border-bottom: 1px solid rgba(0,174,239,0.15);
+      padding: 0;
+    }
+    .quick-links__grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .quick-link-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 52px 28px 44px;
+      border-right: 1px solid rgba(0,174,239,0.12);
+      transition: background 0.3s ease;
+      text-decoration: none;
+    }
+    .quick-link-item:last-child { border-right: none; }
+    .quick-link-item:hover { background: rgba(0,174,239,0.06); }
+    .quick-link-item__icon {
+      width: 60px; height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
+      color: var(--cyan);
+    }
+    .quick-link-item__icon svg { width: 52px; height: 52px; }
+    .quick-link-item__title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.88);
+      margin-bottom: 22px;
+      line-height: 1.6;
+      min-height: 2.4em;
+    }
+    .quick-link-item__btn {
+      display: inline-block;
+      padding: 10px 26px;
+      border: 1.5px solid var(--cyan);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      transition: all 0.25s ease;
+    }
+    .quick-link-item:hover .quick-link-item__btn {
+      background: var(--cyan);
+      color: var(--navy);
+    }
+    @media (max-width: 768px) {
+      .quick-links__grid { grid-template-columns: repeat(2, 1fr); }
+      .quick-link-item:nth-child(2) { border-right: none; }
+      .quick-link-item:nth-child(odd) { border-right: 1px solid rgba(0,174,239,0.12); }
+      .quick-link-item:nth-child(3), .quick-link-item:nth-child(4) { border-top: 1px solid rgba(0,174,239,0.12); }
+    }
+
     /* ─── 3. SERVICES ───────────────────────────────────── */
     .services-dark {
       background: var(--navy);
@@ -536,9 +600,8 @@
       overflow: hidden;
       aspect-ratio: 4/5;
       background:
-        linear-gradient(135deg, rgba(0,174,239,0.3) 0%, transparent 100%),
-        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80') center/cover;
-      /* REPLACE with actual project photo */
+        linear-gradient(135deg, rgba(0,174,239,0.18) 0%, transparent 70%),
+        url('images/Pool.png') center/cover;
     }
     .benefits__badge {
       position: absolute;
@@ -1589,6 +1652,90 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════
+       2b. QUICK LINKS
+  ═══════════════════════════════════════════════════ -->
+  <div class="quick-links">
+    <div class="quick-links__grid">
+
+      <a href="#services" class="quick-link-item">
+        <div class="quick-link-item__icon">
+          <svg viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Pool shell top-down -->
+            <rect x="4" y="14" width="44" height="24" rx="12"/>
+            <!-- Lane ropes / water lines -->
+            <path d="M13 24c2.5-2 5-2 7.5 0s5 2 7.5 0 5-2 7.5 0"/>
+            <path d="M13 30c2.5-2 5-2 7.5 0s5 2 7.5 0 5-2 7.5 0"/>
+            <!-- Ladder rungs -->
+            <line x1="40" y1="14" x2="40" y2="8"/>
+            <line x1="44" y1="14" x2="44" y2="8"/>
+            <line x1="40" y1="10" x2="44" y2="10"/>
+          </svg>
+        </div>
+        <div class="quick-link-item__title">Custom Pool Design</div>
+        <span class="quick-link-item__btn">Learn More</span>
+      </a>
+
+      <a href="#services" class="quick-link-item">
+        <div class="quick-link-item__icon">
+          <svg viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Spa tub body -->
+            <path d="M10 34V22a4 4 0 014-4h24a4 4 0 014 4v12a4 4 0 01-4 4H14a4 4 0 01-4-4z"/>
+            <!-- Jets (circles on side) -->
+            <circle cx="14" cy="26" r="2"/>
+            <circle cx="14" cy="32" r="2"/>
+            <circle cx="38" cy="26" r="2"/>
+            <circle cx="38" cy="32" r="2"/>
+            <!-- Steam / bubbles -->
+            <path d="M20 14c0-2 2-2 2-4"/>
+            <path d="M26 12c0-2 2-2 2-4"/>
+            <path d="M32 14c0-2 2-2 2-4"/>
+          </svg>
+        </div>
+        <div class="quick-link-item__title">Luxury Spas &amp; Swim Spas</div>
+        <span class="quick-link-item__btn">Learn More</span>
+      </a>
+
+      <a href="#services" class="quick-link-item">
+        <div class="quick-link-item__icon">
+          <svg viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Plunge tub -->
+            <path d="M8 18h36v18a4 4 0 01-4 4H12a4 4 0 01-4-4V18z"/>
+            <line x1="8" y1="18" x2="44" y2="18"/>
+            <!-- Snowflake center -->
+            <line x1="26" y1="24" x2="26" y2="34"/>
+            <line x1="21" y1="26.5" x2="31" y2="31.5"/>
+            <line x1="31" y1="26.5" x2="21" y2="31.5"/>
+            <!-- Snowflake tips -->
+            <path d="M26 24l-1.5 1.5M26 24l1.5 1.5"/>
+            <path d="M26 34l-1.5-1.5M26 34l1.5-1.5"/>
+          </svg>
+        </div>
+        <div class="quick-link-item__title">Cold Plunge Systems</div>
+        <span class="quick-link-item__btn">Learn More</span>
+      </a>
+
+      <a href="#contact" class="quick-link-item">
+        <div class="quick-link-item__icon">
+          <svg viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Blueprint grid / design board -->
+            <rect x="6" y="8" width="40" height="32" rx="3"/>
+            <!-- Isometric cube inside -->
+            <path d="M26 14l10 5.5v11L26 36l-10-5.5v-11z"/>
+            <line x1="26" y1="14" x2="26" y2="36"/>
+            <line x1="16" y1="19.5" x2="36" y2="19.5"/>
+            <!-- Pencil lower-right corner -->
+            <path d="M36 42l6-6-3-3-6 6z"/>
+            <line x1="39" y1="33" x2="42" y2="36"/>
+          </svg>
+        </div>
+        <div class="quick-link-item__title">3D Design &amp; Free Quote</div>
+        <span class="quick-link-item__btn">Learn More</span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
        3. SERVICES
   ═══════════════════════════════════════════════════ -->
   <section class="services-dark" id="services">
@@ -1602,6 +1749,15 @@
 
         <div class="service-card reveal reveal-delay-1">
           <div class="service-card__num">01</div>
+          <div class="service-card__icon">
+            <svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="22" height="14" rx="7"/>
+              <path d="M6 13c1.5-1.2 3-1.2 4.5 0s3 1.2 4.5 0 3-1.2 4.5 0"/>
+              <line x1="19" y1="7" x2="19" y2="4"/>
+              <line x1="22" y1="7" x2="22" y2="4"/>
+              <line x1="19" y1="5.5" x2="22" y2="5.5"/>
+            </svg>
+          </div>
           <h3 class="service-card__title">Custom Pools</h3>
           <p class="service-card__desc">Not a catalog pool — your pool. We design from scratch around your yard, your style, and your vision, from sleek geometric to freeform resort-style.</p>
           <a href="#contact" class="service-card__link">Get a quote →</a>
@@ -1609,6 +1765,18 @@
 
         <div class="service-card reveal reveal-delay-2">
           <div class="service-card__num">02</div>
+          <div class="service-card__icon">
+            <svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 18V12a3 3 0 013-3h12a3 3 0 013 3v6a3 3 0 01-3 3H7a3 3 0 01-3-3z"/>
+              <circle cx="7" cy="14" r="1.2"/>
+              <circle cx="7" cy="18" r="1.2"/>
+              <circle cx="19" cy="14" r="1.2"/>
+              <circle cx="19" cy="18" r="1.2"/>
+              <path d="M10 6c0-1.2 1.2-1.2 1.2-2.4"/>
+              <path d="M13 5c0-1.2 1.2-1.2 1.2-2.4"/>
+              <path d="M16 6c0-1.2 1.2-1.2 1.2-2.4"/>
+            </svg>
+          </div>
           <h3 class="service-card__title">Luxury Spas</h3>
           <p class="service-card__desc">Melt away the day. Our in-ground spas are built with premium jets, mood lighting, and seamless pool integration — your private retreat, year-round.</p>
           <a href="#contact" class="service-card__link">Get a quote →</a>
@@ -1616,6 +1784,14 @@
 
         <div class="service-card reveal reveal-delay-3">
           <div class="service-card__num">03</div>
+          <div class="service-card__icon">
+            <svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 18c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/>
+              <circle cx="18" cy="8" r="2"/>
+              <path d="M12 12l4-3-2-2-5 2-3 4 4 1z"/>
+              <path d="M12 12l2 4"/>
+            </svg>
+          </div>
           <h3 class="service-card__title">Swim Spas</h3>
           <p class="service-card__desc">Swim, train, and relax in one compact system. Perfect for smaller yards that demand big experiences — all four seasons in Utah.</p>
           <a href="#contact" class="service-card__link">Get a quote →</a>
@@ -1623,6 +1799,17 @@
 
         <div class="service-card reveal reveal-delay-4">
           <div class="service-card__num">04</div>
+          <div class="service-card__icon">
+            <svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 9h18v10a3 3 0 01-3 3H7a3 3 0 01-3-3V9z"/>
+              <line x1="4" y1="9" x2="22" y2="9"/>
+              <line x1="13" y1="12" x2="13" y2="19"/>
+              <line x1="9.5" y1="13.5" x2="16.5" y2="17.5"/>
+              <line x1="16.5" y1="13.5" x2="9.5" y2="17.5"/>
+              <path d="M13 12l-1 1M13 12l1 1"/>
+              <path d="M13 19l-1-1M13 19l1-1"/>
+            </svg>
+          </div>
           <h3 class="service-card__title">Cold Plunge Systems</h3>
           <p class="service-card__desc">Recovery, clarity, energy. Our cold plunge installations are custom-built for athletes, biohackers, and anyone serious about feeling their best every day.</p>
           <a href="#contact" class="service-card__link">Get a quote →</a>
@@ -1640,49 +1827,56 @@
       <div class="benefits__inner">
         <div class="benefits__content">
           <div class="tag">Why BlueScapes</div>
-          <h2 class="headline">We Don't Just Build Pools.<br/>We Build <span class="accent">Memories.</span></h2>
-          <p class="subheadline">Any contractor can pour concrete. We craft experiences — and we back every project with decades of expertise and a team that's still around when you need us.</p>
+          <h2 class="headline">We Compete on<br/><span class="accent">Life-Cycle Value.</span></h2>
+          <p class="subheadline">Standard builders compete on "getting the job done." We've eliminated the standard build model to focus on Value Innovation — elite materials, a client-first philosophy, and an outdoor environment built as an asset, not a liability.</p>
           <ul class="benefits__list">
             <li class="benefits__list-item">
               <div class="benefits__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
               <div class="benefits__list-text">
-                <strong>Design in 3D Before You Commit</strong>
-                <span>See your exact pool in photorealistic 3D before a single shovel breaks ground. No surprises.</span>
+                <strong>Exceptional Craftsmanship, Built for Life</strong>
+                <span>While others build for the sale, we build for the legacy — delivering quality that protects your investment for decades.</span>
               </div>
             </li>
             <li class="benefits__list-item">
               <div class="benefits__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
               <div class="benefits__list-text">
-                <strong>Transparent, Itemized Pricing</strong>
-                <span>No hidden fees. No surprise change orders. Your quote is your contract — plain and simple.</span>
+                <strong>Transparent, Detailed Pricing</strong>
+                <span>Our Itemized Transparency Protocol gives you a forensic breakdown of every dollar — zero hidden-fee traps, zero vague estimates.</span>
               </div>
             </li>
             <li class="benefits__list-item">
               <div class="benefits__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
               <div class="benefits__list-text">
-                <strong>In-House Crew — Zero Outsourcing</strong>
-                <span>Our team builds your pool start to finish. No subcontractors passing the buck when problems arise.</span>
+                <strong>In-House Team — End-to-End Accountability</strong>
+                <span>We bypass subcontractor delays and quality-drift. The person who designs your dream is the one who secures the steel.</span>
               </div>
             </li>
             <li class="benefits__list-item">
               <div class="benefits__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
               <div class="benefits__list-text">
-                <strong>Lifetime Structural Warranty</strong>
-                <span>We build like we're going to maintain it forever — because we often do. Your investment is protected.</span>
+                <strong>3D Design — The "Zero-Risk" Vision</strong>
+                <span>Don't just hope it looks good — know it does. Our photorealistic 3D modeling eliminates buyer's remorse before a single shovel breaks ground.</span>
               </div>
             </li>
             <li class="benefits__list-item">
               <div class="benefits__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
               <div class="benefits__list-text">
-                <strong>60+ Years of Combined Team Experience</strong>
-                <span>Our crew brings decades of hands-on expertise to every build — pooled knowledge that shows in the quality of every project we deliver.</span>
+                <strong>60 Years of Structural Wisdom</strong>
+                <span>Six decades of engineering expertise simplify complex hydraulics and finishing systems, delivering quiet, efficient elegance newer firms can't replicate.</span>
               </div>
             </li>
             <li class="benefits__list-item">
               <div class="benefits__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
               <div class="benefits__list-text">
-                <strong>Built for Utah's Climate</strong>
-                <span>From freeze-thaw winters to high-desert summers, every BlueScapes pool is engineered for Utah's conditions — materials, plumbing, and structure chosen to last decades in our environment.</span>
+                <strong>Engineered for Utah's Climate</strong>
+                <span>We build Geologically Hardened Environments — re-engineered for freeze-thaw cycles and shifting mountain soils of the Wasatch Front.</span>
+              </div>
+            </li>
+            <li class="benefits__list-item">
+              <div class="benefits__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+              <div class="benefits__list-text">
+                <strong>Direct Access to the Founders</strong>
+                <span>You don't deal with a commission-hungry rep. We've replaced the sales funnel with Direct Leadership Accountability — you work with us.</span>
               </div>
             </li>
           </ul>
