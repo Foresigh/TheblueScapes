@@ -370,6 +370,69 @@
       .trust-bar__item:nth-child(odd) { border-right: 1px solid rgba(0,174,239,0.12); }
     }
 
+    /* ─── 2b. SERVICE NAV BAR ───────────────────────────── */
+    :root { --gold: #C9A84C; --gold-light: #E0C070; --gold-dark: #A8882C; }
+    .svc-nav {
+      background: #0d1f3c;
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      padding: 0;
+    }
+    .svc-nav__grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .svc-nav__item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 50px 28px 44px;
+      border-right: 1px solid rgba(201,168,76,0.15);
+      text-decoration: none;
+      transition: background 0.3s ease;
+      gap: 0;
+    }
+    .svc-nav__item:last-child { border-right: none; }
+    .svc-nav__item:hover { background: rgba(201,168,76,0.06); }
+    .svc-nav__icon {
+      width: 64px; height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      color: var(--gold);
+    }
+    .svc-nav__icon svg { width: 56px; height: 56px; }
+    .svc-nav__title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 24px;
+      line-height: 1.6;
+      min-height: 2.5em;
+    }
+    .svc-nav__btn {
+      display: inline-block;
+      padding: 12px 32px;
+      background: var(--gold);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #0d1f3c;
+      transition: background 0.25s ease;
+    }
+    .svc-nav__item:hover .svc-nav__btn { background: var(--gold-light); }
+    @media (max-width: 768px) {
+      .svc-nav__grid { grid-template-columns: repeat(2, 1fr); }
+      .svc-nav__item:nth-child(2) { border-right: none; }
+      .svc-nav__item:nth-child(odd) { border-right: 1px solid rgba(201,168,76,0.15); }
+      .svc-nav__item:nth-child(3), .svc-nav__item:nth-child(4) { border-top: 1px solid rgba(201,168,76,0.15); }
+    }
+
     /* ─── 3. SERVICES ───────────────────────────────────── */
     .services-dark {
       background: var(--navy);
@@ -1584,6 +1647,79 @@
           <div class="trust-bar__label">Licensed & Insured</div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       2b. SERVICE NAV BAR
+  ═══════════════════════════════════════════════════ -->
+  <div class="svc-nav">
+    <div class="svc-nav__grid">
+
+      <a href="#services" class="svc-nav__item">
+        <div class="svc-nav__icon">
+          <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="16" width="46" height="26" rx="13"/>
+            <path d="M14 28c3-2.5 6-2.5 9 0s6 2.5 9 0 6-2.5 9 0"/>
+            <line x1="42" y1="16" x2="42" y2="9"/>
+            <line x1="47" y1="16" x2="47" y2="9"/>
+            <line x1="42" y1="12" x2="47" y2="12"/>
+          </svg>
+        </div>
+        <div class="svc-nav__title">Custom Pool Design</div>
+        <span class="svc-nav__btn">Learn More</span>
+      </a>
+
+      <a href="#services" class="svc-nav__item">
+        <div class="svc-nav__icon">
+          <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 38V25a5 5 0 015-5h24a5 5 0 015 5v13a5 5 0 01-5 5H16a5 5 0 01-5-5z"/>
+            <circle cx="16" cy="30" r="2.5"/>
+            <circle cx="16" cy="37" r="2.5"/>
+            <circle cx="40" cy="30" r="2.5"/>
+            <circle cx="40" cy="37" r="2.5"/>
+            <path d="M22 16c0-2.5 2-2.5 2-5"/>
+            <path d="M28 14c0-2.5 2-2.5 2-5"/>
+            <path d="M34 16c0-2.5 2-2.5 2-5"/>
+          </svg>
+        </div>
+        <div class="svc-nav__title">Luxury Spas &amp; Swim Spas</div>
+        <span class="svc-nav__btn">Learn More</span>
+      </a>
+
+      <a href="#services" class="svc-nav__item">
+        <div class="svc-nav__icon">
+          <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 20h38v20a5 5 0 01-5 5H14a5 5 0 01-5-5V20z"/>
+            <line x1="9" y1="20" x2="47" y2="20"/>
+            <line x1="28" y1="28" x2="28" y2="38"/>
+            <line x1="22" y1="30.5" x2="34" y2="35.5"/>
+            <line x1="34" y1="30.5" x2="22" y2="35.5"/>
+            <path d="M28 28l-2 2M28 28l2 2"/>
+            <path d="M28 38l-2-2M28 38l2-2"/>
+            <line x1="22" y1="33" x2="17" y2="33"/>
+            <line x1="34" y1="33" x2="39" y2="33"/>
+          </svg>
+        </div>
+        <div class="svc-nav__title">Cold Plunge Systems</div>
+        <span class="svc-nav__btn">Learn More</span>
+      </a>
+
+      <a href="#contact" class="svc-nav__item">
+        <div class="svc-nav__icon">
+          <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="9" width="44" height="34" rx="4"/>
+            <path d="M28 16l11 6v12L28 40 17 34V22z"/>
+            <line x1="28" y1="16" x2="28" y2="40"/>
+            <line x1="17" y1="22" x2="39" y2="22"/>
+            <path d="M40 47l7-7-3.5-3.5-7 7z"/>
+            <line x1="43.5" y1="36.5" x2="47" y2="40"/>
+          </svg>
+        </div>
+        <div class="svc-nav__title">3D Design &amp; Free Quote</div>
+        <span class="svc-nav__btn">Learn More</span>
+      </a>
+
     </div>
   </div>
 
