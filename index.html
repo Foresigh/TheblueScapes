@@ -586,28 +586,29 @@
     }
 
     /* ─── 5. PORTFOLIO ──────────────────────────────────── */
-    .portfolio-section { background: var(--navy); padding: 90px 0; position: relative; overflow: hidden; }
+    .portfolio-section { background: #08172e; padding: 100px 0 110px; position: relative; overflow: hidden; }
     .portfolio-section::before {
       content: '';
       position: absolute;
-      bottom: -200px; right: -200px;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(0,174,239,0.07) 0%, transparent 70%);
+      bottom: -250px; left: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 65%);
       pointer-events: none;
     }
-    .portfolio__header { text-align: center; margin-bottom: 56px; }
+    .portfolio__header { text-align: center; margin-bottom: 64px; }
+    .portfolio__header .tag { background: rgba(201,168,76,0.12); color: var(--gold); }
 
     .portfolio-exclusive {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
+      gap: 20px;
       align-items: stretch;
     }
     .portfolio-left {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(201,168,76,0.14);
       border-radius: 20px;
-      padding: 48px 44px;
+      padding: 52px 48px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -618,8 +619,8 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--cyan-dark), var(--cyan-light));
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold-dark), var(--gold-light));
     }
     .portfolio-left__eyebrow {
       display: inline-flex;
@@ -627,113 +628,143 @@
       gap: 7px;
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: .12em;
+      letter-spacing: .14em;
       text-transform: uppercase;
-      color: var(--cyan);
+      color: var(--gold);
       margin-bottom: 20px;
     }
     .portfolio-left__eyebrow svg { width: 13px; height: 13px; }
     .portfolio-left h2 {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(28px, 3vw, 40px);
+      font-size: clamp(28px, 3vw, 42px);
       font-weight: 800;
       color: #fff;
       line-height: 1.15;
       letter-spacing: -.02em;
       margin-bottom: 18px;
     }
-    .portfolio-left h2 span { color: var(--cyan); }
+    .portfolio-left h2 span { color: var(--gold); }
     .portfolio-left p {
       font-size: 15px;
-      color: rgba(255,255,255,0.60);
-      line-height: 1.75;
+      color: rgba(255,255,255,0.58);
+      line-height: 1.78;
       margin-bottom: 32px;
     }
     .portfolio-perks {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
       margin-bottom: 36px;
     }
     .portfolio-perk {
       display: flex;
       align-items: flex-start;
-      gap: 12px;
+      gap: 14px;
     }
     .portfolio-perk__icon {
-      width: 28px; height: 28px;
-      background: rgba(0,174,239,0.14);
+      width: 30px; height: 30px;
+      background: rgba(201,168,76,0.12);
       border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
       margin-top: 1px;
     }
-    .portfolio-perk__icon svg { width: 14px; height: 14px; color: var(--cyan); }
-    .portfolio-perk__text strong { display: block; font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
-    .portfolio-perk__text span { font-size: 13px; color: rgba(255,255,255,0.50); line-height: 1.5; }
+    .portfolio-perk__icon svg { width: 14px; height: 14px; color: var(--gold); }
+    .portfolio-perk__text strong { display: block; font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+    .portfolio-perk__text span { font-size: 13px; color: rgba(255,255,255,0.48); line-height: 1.55; }
 
     .portfolio-slots {
       display: flex;
       align-items: center;
       gap: 14px;
       padding: 16px 20px;
-      background: rgba(245,158,11,0.10);
-      border: 1px solid rgba(245,158,11,0.25);
+      background: rgba(201,168,76,0.08);
+      border: 1px solid rgba(201,168,76,0.22);
       border-radius: 12px;
-      margin-bottom: 28px;
+      margin-bottom: 32px;
     }
-    .portfolio-slots svg { width: 20px; height: 20px; color: #F59E0B; flex-shrink: 0; }
-    .portfolio-slots__text strong { display: block; font-size: 14px; font-weight: 700; color: #F59E0B; }
-    .portfolio-slots__text span { font-size: 12px; color: rgba(245,158,11,0.70); }
+    .portfolio-slots svg { width: 20px; height: 20px; color: var(--gold); flex-shrink: 0; }
+    .portfolio-slots__text strong { display: block; font-size: 14px; font-weight: 700; color: var(--gold); }
+    .portfolio-slots__text span { font-size: 12px; color: rgba(201,168,76,0.70); }
+
+    .portfolio-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      background: var(--gold);
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #08172e;
+      text-decoration: none;
+      transition: background .25s ease;
+      align-self: flex-start;
+    }
+    .portfolio-cta-btn:hover { background: var(--gold-light); }
 
     .portfolio-right {
       display: grid;
       grid-template-rows: 1fr 1fr;
-      gap: 24px;
+      gap: 20px;
     }
     .portfolio-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(201,168,76,0.12);
       border-radius: 16px;
-      padding: 32px 28px;
+      padding: 36px 32px;
       position: relative;
       overflow: hidden;
-      transition: all .3s;
+      transition: all .3s ease;
     }
+    .portfolio-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold-dark), var(--gold-light));
+      transform: scaleX(0.2);
+      transform-origin: left;
+      transition: transform .4s ease;
+    }
+    .portfolio-card:hover::before { transform: scaleX(1); }
     .portfolio-card:hover {
-      background: rgba(255,255,255,0.07);
-      border-color: rgba(0,174,239,0.25);
+      background: rgba(201,168,76,0.05);
+      border-color: rgba(201,168,76,0.25);
       transform: translateY(-3px);
     }
     .portfolio-card__num {
       position: absolute;
-      top: 16px; right: 22px;
+      top: 12px; right: 20px;
       font-family: 'Playfair Display', serif;
       font-size: 64px;
       font-weight: 800;
-      color: rgba(255,255,255,0.03);
+      color: rgba(201,168,76,0.05);
       line-height: 1;
+      transition: color .3s;
     }
+    .portfolio-card:hover .portfolio-card__num { color: rgba(201,168,76,0.10); }
     .portfolio-card__icon {
-      width: 44px; height: 44px;
-      background: rgba(0,174,239,0.12);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 16px;
+      color: var(--gold);
+      margin-bottom: 18px;
     }
-    .portfolio-card__icon svg { width: 22px; height: 22px; color: var(--cyan); }
-    .portfolio-card__title { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 6px; }
-    .portfolio-card__desc { font-size: 13px; color: rgba(255,255,255,0.50); line-height: 1.6; }
+    .portfolio-card__icon svg { width: 40px; height: 40px; }
+    .portfolio-card__title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; letter-spacing: -.01em; }
+    .portfolio-card__desc { font-size: 13px; color: rgba(255,255,255,0.50); line-height: 1.65; margin-bottom: 16px; }
     .portfolio-card__badge {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      font-size: 11px;
+      gap: 6px;
+      font-size: 10px;
       font-weight: 700;
-      letter-spacing: .08em;
+      letter-spacing: .10em;
       text-transform: uppercase;
-      color: var(--cyan);
-      margin-top: 14px;
+      color: var(--gold);
+      padding: 6px 12px;
+      border: 1px solid rgba(201,168,76,0.30);
+      border-radius: 4px;
     }
 
     @media (max-width: 860px) {
@@ -742,7 +773,7 @@
     }
     @media (max-width: 540px) {
       .portfolio-right { grid-template-columns: 1fr; }
-      .portfolio-left { padding: 32px 26px; }
+      .portfolio-left { padding: 36px 28px; }
     }
 
     /* ─── 6. MID CTA ────────────────────────────────────── */
@@ -1789,47 +1820,47 @@
   <section class="portfolio-section" id="portfolio">
     <div class="container">
       <div class="portfolio__header reveal">
-        <div class="tag tag--white">First Projects</div>
-        <h2 class="headline headline--white">Be Part of Our <span class="accent">First Chapter</span></h2>
-        <p class="subheadline subheadline--white" style="margin:16px auto 0;">We're selectively taking our first Utah builds — and the families who say yes early get something no future client can get.</p>
+        <div class="tag">By Design, Not By Demand</div>
+        <h2 class="headline headline--white">We Build Few.<br/>We Build <span class="accent">Perfect.</span></h2>
+        <p class="subheadline subheadline--white" style="margin:16px auto 0;">We've made a deliberate choice: limit our seasonal projects so every build gets the full weight of our expertise, craftsmanship, and attention. When you're on our roster, you're not one of many — you're our focus.</p>
       </div>
 
       <div class="portfolio-exclusive">
 
         <div class="portfolio-left reveal">
           <div class="portfolio-left__eyebrow">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            Founding Client Opportunity
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+            The Selective Build Program
           </div>
-          <h2>Your Project Becomes<br/><span>Our Showpiece.</span></h2>
-          <p>We're bringing 60+ years of combined expertise to Utah — and our first clients get our absolute best work. Every detail, every finish, every decision gets our full attention because your project is the one we'll be proud to show the world.</p>
+          <h2>Quality Over Volume.<br/><span>Always.</span></h2>
+          <p>We cap our seasonal builds at a deliberate number — not because of capacity constraints, but because uncompromised quality demands undivided focus. Every project on our roster receives the same elite-level attention from design through final walkthrough.</p>
 
           <div class="portfolio-perks">
             <div class="portfolio-perk">
               <div class="portfolio-perk__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01"/></svg>
               </div>
               <div class="portfolio-perk__text">
-                <strong>Founder's Pricing</strong>
-                <span>First clients lock in our introductory rates before we adjust for demand.</span>
+                <strong>Priority Scheduling</strong>
+                <span>Secure your build slot before the season fills. Our roster closes when capacity is reached — not when demand slows.</span>
               </div>
             </div>
             <div class="portfolio-perk">
               <div class="portfolio-perk__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
               </div>
               <div class="portfolio-perk__text">
-                <strong>Free 3D Design Session</strong>
-                <span>We'll render your exact backyard in photorealistic 3D — at no charge.</span>
+                <strong>Dedicated Project Team</strong>
+                <span>One crew, one focus. Your build gets our full in-house team from groundbreak to final walkthrough — zero handoffs.</span>
               </div>
             </div>
             <div class="portfolio-perk">
               <div class="portfolio-perk__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.07 9.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012.97 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L7.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
               </div>
               <div class="portfolio-perk__text">
-                <strong>Direct Access to the Founders</strong>
-                <span>You work directly with Ramato — not a sales rep. Real answers, real accountability.</span>
+                <strong>Direct Founder Access</strong>
+                <span>You work directly with our leadership — not a coordinator or sales rep. Real decisions, real accountability, every step.</span>
               </div>
             </div>
           </div>
@@ -1837,14 +1868,14 @@
           <div class="portfolio-slots">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
             <div class="portfolio-slots__text">
-              <strong>Limited spots this season</strong>
-              <span>We're only accepting a small number of founding projects — inquire early.</span>
+              <strong>Seasonal capacity is limited</strong>
+              <span>Our build roster fills on a first-confirmed basis — inquire to check current availability.</span>
             </div>
           </div>
 
-          <a href="#contact" class="btn btn--primary" style="align-self:flex-start;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-            Claim My Spot
+          <a href="#contact" class="portfolio-cta-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            Reserve My Build Slot
           </a>
         </div>
 
@@ -1852,26 +1883,35 @@
           <div class="portfolio-card reveal reveal-delay-1">
             <div class="portfolio-card__num">01</div>
             <div class="portfolio-card__icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 12c1.5-2 3-3 4.5-3s3 2 4.5 2 3-3 4.5-3 3 1 4.5 3"/><rect x="6" y="2" width="12" height="7" rx="2"/></svg>
+              <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="16" width="46" height="26" rx="13"/>
+                <path d="M14 28c3-2.5 6-2.5 9 0s6 2.5 9 0 6-2.5 9 0"/>
+                <line x1="42" y1="16" x2="42" y2="9"/><line x1="47" y1="16" x2="47" y2="9"/><line x1="42" y1="12" x2="47" y2="12"/>
+              </svg>
             </div>
             <div class="portfolio-card__title">Custom Pool Design</div>
-            <div class="portfolio-card__desc">From geometric precision to freeform resort-style — designed around your yard, your vision, and Utah's climate.</div>
+            <div class="portfolio-card__desc">From geometric precision to freeform resort-style — each pool engineered specifically for your terrain, Utah's climate, and your vision.</div>
             <div class="portfolio-card__badge">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-              Accepting first builds now
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+              Now Accepting Applications
             </div>
           </div>
 
           <div class="portfolio-card reveal reveal-delay-2">
             <div class="portfolio-card__num">02</div>
             <div class="portfolio-card__icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v2m4-2v2m4-2v2"/><path d="M5 10h14a1 1 0 011 1v5a4 4 0 01-4 4H8a4 4 0 01-4-4v-5a1 1 0 011-1z"/></svg>
+              <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 38V25a5 5 0 015-5h24a5 5 0 015 5v13a5 5 0 01-5 5H16a5 5 0 01-5-5z"/>
+                <circle cx="16" cy="30" r="2.5"/><circle cx="16" cy="37" r="2.5"/>
+                <circle cx="40" cy="30" r="2.5"/><circle cx="40" cy="37" r="2.5"/>
+                <path d="M22 16c0-2.5 2-2.5 2-5M28 14c0-2.5 2-2.5 2-5M34 16c0-2.5 2-2.5 2-5"/>
+              </svg>
             </div>
-            <div class="portfolio-card__title">Spas, Swim Spas & Cold Plunges</div>
-            <div class="portfolio-card__desc">Complete wellness installations — from luxury in-ground spas to biohacker-grade cold plunge systems built for year-round Utah use.</div>
+            <div class="portfolio-card__title">Spas, Swim Spas &amp; Cold Plunges</div>
+            <div class="portfolio-card__desc">Complete wellness installations built for year-round Utah use — from luxury in-ground spas to biohacker-grade cold plunge systems.</div>
             <div class="portfolio-card__badge">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-              Accepting first builds now
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+              Now Accepting Applications
             </div>
           </div>
         </div>
