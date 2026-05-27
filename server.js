@@ -1,8 +1,47 @@
-const express = require('express');
-const crypto  = require('crypto');
-const path    = require('path');
-const geoip   = require('geoip-lite');
-const db      = require('./db/setup');
+const express    = require('express');
+const crypto     = require('crypto');
+const path       = require('path');
+const geoip      = require('geoip-lite');
+const nodemailer = require('nodemailer');
+const db         = require('./db/setup');
+
+// ── Email setup ───────────────────────────────────────────
+const mailer = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
+
+async function sendLeadEmail(lead) {
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) return;
+  const to = process.env.NOTIFY_EMAIL || process.env.GMAIL_USER;
+  await mailer.sendMail({
+    from: `"BlueScapes Website" <${process.env.GMAIL_USER}>`,
+    to,
+    subject: `New Quote Request — ${lead.first_name} ${lead.last_name}`,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
+        <div style="background:#08172e;padding:24px;border-radius:8px 8px 0 0;">
+          <h2 style="color:#C9A84C;margin:0;">New Quote Request</h2>
+          <p style="color:#aaa;margin:4px 0 0;">BlueScapes Website</p>
+        </div>
+        <div style="border:1px solid #e5e7eb;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
+          <table style="width:100%;border-collapse:collapse;">
+            <tr><td style="padding:8px 0;color:#6b7280;width:140px;">Name</td><td style="padding:8px 0;font-weight:600;">${lead.first_name} ${lead.last_name}</td></tr>
+            <tr><td style="padding:8px 0;color:#6b7280;">Email</td><td style="padding:8px 0;"><a href="mailto:${lead.email}">${lead.email}</a></td></tr>
+            <tr><td style="padding:8px 0;color:#6b7280;">Phone</td><td style="padding:8px 0;"><a href="tel:${lead.phone}">${lead.phone}</a></td></tr>
+            <tr><td style="padding:8px 0;color:#6b7280;vertical-align:top;">Details</td><td style="padding:8px 0;white-space:pre-wrap;">${(lead.message || '').replace(/</g, '&lt;')}</td></tr>
+          </table>
+          <div style="margin-top:24px;">
+            <a href="https://bluescapesutah.com/admin" style="background:#C9A84C;color:#08172e;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:700;">View in Admin Dashboard</a>
+          </div>
+        </div>
+      </div>
+    `,
+  });
+}
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -106,6 +145,7 @@ app.post('/api/contact', async (req, res) => {
       referrer:     req.get('referer') || '',
     });
     res.json({ success: true, id: lead.id });
+    sendLeadEmail(lead).catch(err => console.error('Email error:', err.message));
   } catch (err) {
     console.error('insertLead error:', err.message);
     res.status(500).json({ error: 'Could not save lead' });
