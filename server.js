@@ -14,6 +14,38 @@ const mailer = nodemailer.createTransport({
   },
 });
 
+async function sendConfirmationEmail(lead) {
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) return;
+  if (!lead.email) return;
+  await mailer.sendMail({
+    from: `"BlueScapes" <${process.env.GMAIL_USER}>`,
+    to: lead.email,
+    subject: `We received your request, ${lead.first_name}!`,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
+        <div style="background:#08172e;padding:32px 24px;border-radius:8px 8px 0 0;text-align:center;">
+          <h1 style="color:#C9A84C;margin:0;font-size:28px;">BLUE<span style="color:#fff;">SCAPES</span></h1>
+          <p style="color:#aaa;margin:8px 0 0;font-size:14px;">Utah's Custom Pool Builders</p>
+        </div>
+        <div style="border:1px solid #e5e7eb;border-top:none;padding:32px 24px;border-radius:0 0 8px 8px;">
+          <h2 style="color:#08172e;margin:0 0 16px;">Thanks, ${lead.first_name}! We got your request.</h2>
+          <p style="color:#4b5563;line-height:1.7;">We've received your quote request and one of our team members will be in touch with you within <strong>1–2 business days</strong> to schedule your free consultation.</p>
+          <p style="color:#4b5563;line-height:1.7;">In the meantime, if you have any urgent questions feel free to reach us directly:</p>
+          <div style="background:#f9fafb;border-radius:8px;padding:16px 20px;margin:20px 0;">
+            <p style="margin:0 0 8px;color:#08172e;"><strong>📞</strong> &nbsp;<a href="tel:8013605577" style="color:#0078B8;text-decoration:none;">801.360.5577</a></p>
+            <p style="margin:0;color:#08172e;"><strong>✉️</strong> &nbsp;<a href="mailto:bluescapesutah@gmail.com" style="color:#0078B8;text-decoration:none;">bluescapesutah@gmail.com</a></p>
+          </div>
+          <p style="color:#4b5563;line-height:1.7;">We look forward to building something extraordinary for your family.</p>
+          <p style="color:#4b5563;margin:0;">— The BlueScapes Team</p>
+          <div style="margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb;text-align:center;">
+            <p style="color:#9ca3af;font-size:12px;margin:0;">BlueScapes Utah &nbsp;·&nbsp; 801.360.5577 &nbsp;·&nbsp; bluescapesutah.com</p>
+          </div>
+        </div>
+      </div>
+    `,
+  });
+}
+
 async function sendLeadEmail(lead) {
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) return;
   const to = process.env.NOTIFY_EMAIL || process.env.GMAIL_USER;
@@ -146,6 +178,7 @@ app.post('/api/contact', async (req, res) => {
     });
     res.json({ success: true, id: lead.id });
     sendLeadEmail(lead).catch(err => console.error('Email error:', err.message));
+    sendConfirmationEmail(lead).catch(err => console.error('Confirmation email error:', err.message));
   } catch (err) {
     console.error('insertLead error:', err.message);
     res.status(500).json({ error: 'Could not save lead' });
