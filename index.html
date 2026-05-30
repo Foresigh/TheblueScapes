@@ -216,10 +216,84 @@
       font-weight: 600;
       color: var(--cyan-light);
     }
+    .navbar__hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      z-index: 1001;
+    }
+    .navbar__hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #fff;
+      border-radius: 2px;
+      transition: all .3s;
+    }
+    .navbar__hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .navbar__hamburger.open span:nth-child(2) { opacity: 0; }
+    .navbar__hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      position: fixed;
+      top: 0; right: 0;
+      width: 280px;
+      height: 100%;
+      background: #08172e;
+      z-index: 1000;
+      padding: 90px 32px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      transform: translateX(100%);
+      transition: transform .35s cubic-bezier(.4,0,.2,1);
+      box-shadow: -4px 0 30px rgba(0,0,0,.4);
+    }
+    .mobile-menu.open { transform: translateX(0); }
+    .mobile-menu ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 32px;
+    }
+    .mobile-menu ul li a {
+      display: block;
+      padding: 16px 0;
+      font-size: 17px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+      border-bottom: 1px solid rgba(201,168,76,0.12);
+      transition: color .2s;
+    }
+    .mobile-menu ul li a:hover { color: var(--cyan); }
+    .mobile-menu__phone {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--cyan-light);
+      margin-bottom: 20px;
+    }
+    .mobile-menu__overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .35s;
+    }
+    .mobile-menu__overlay.open { opacity: 1; pointer-events: all; }
+
     @media (max-width: 768px) {
       .navbar__nav { display: none; }
       .navbar__phone { display: none; }
       .navbar__cta .btn { padding: 11px 22px; font-size: 14px; }
+      .navbar__hamburger { display: flex; }
     }
 
     /* ─── 1. HERO ───────────────────────────────────────── */
@@ -1552,8 +1626,25 @@
           Free Quote
         </a>
       </div>
+      <button class="navbar__hamburger" id="navToggle" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu__overlay" id="menuOverlay"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li><a href="#process">Our Process</a></li>
+      <li><a href="#team">Our Team</a></li>
+      <li><a href="#testimonials">Leave a Review</a></li>
+    </ul>
+    <div class="mobile-menu__phone">📞 801.360.5577</div>
+    <a href="#contact" class="btn btn--primary" style="justify-content:center;">Free Quote</a>
+  </div>
 
   <!-- ═══════════════════════════════════════════════════
        1. HERO
@@ -2527,6 +2618,28 @@
       });
     }, { threshold: 0.4 });
     document.querySelectorAll('section[id], div[id]').forEach(s => sectionObserver.observe(s));
+
+    // ── Mobile Menu ───────────────────────────────────────
+    const navToggle  = document.getElementById('navToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+
+    function openMenu() {
+      mobileMenu.classList.add('open');
+      menuOverlay.classList.add('open');
+      navToggle.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMenu() {
+      mobileMenu.classList.remove('open');
+      menuOverlay.classList.remove('open');
+      navToggle.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    navToggle.addEventListener('click', () => mobileMenu.classList.contains('open') ? closeMenu() : openMenu());
+    menuOverlay.addEventListener('click', closeMenu);
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
 
     // ── Quote Form ────────────────────────────────────────
     const form      = document.getElementById('quoteForm');
