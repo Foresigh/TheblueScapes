@@ -1678,8 +1678,8 @@
   <!-- Sale Banner -->
   <div id="saleBanner" role="banner">
     <div class="banner__inner">
-      <span class="banner__offer" id="bannerOffer"></span>
-      <span class="banner__title" id="bannerTitle"></span>
+      <span class="banner__offer" id="bannerOfferText"></span>
+      <span class="banner__title" id="bannerTitleText"></span>
       <a href="#contact" class="banner__cta">Claim Offer</a>
     </div>
     <button class="banner__close" id="bannerClose" aria-label="Close banner">&times;</button>
@@ -2685,8 +2685,8 @@
         const data = await res.json();
         if (!data.enabled) return;
         if (sessionStorage.getItem('bannerDismissed')) return;
-        document.getElementById('bannerOffer').textContent = data.offer;
-        document.getElementById('bannerTitle').textContent = data.title;
+        document.getElementById('bannerOfferText').textContent = data.offer;
+        document.getElementById('bannerTitleText').textContent = data.title;
         const banner = document.getElementById('saleBanner');
         banner.classList.add('is-visible');
         // Push navbar down

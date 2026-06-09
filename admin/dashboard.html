@@ -590,9 +590,9 @@
         Reviews
       </a>
       <div class="sidebar__section">Site</div>
-      <a class="sidebar__item" onclick="showView('banner')">
+      <a class="sidebar__item" onclick="showView('banner')" id="sidebarBannerLink">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3z"/><path d="M3 10h18M3 17h18"/></svg>
-        Sale Banner
+        Sale Banner <span id="bannerDot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#6b7280;margin-left:4px;vertical-align:middle;"></span>
       </a>
       <a class="sidebar__item" href="/" target="_blank">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -1288,9 +1288,11 @@ async function loadBannerState() {
     $('bannerOffer').value    = data.offer  || '';
     $('bannerTitle').value    = data.title  || '';
     updateBannerPreview();
-    const st = $('bannerStatus');
+    const st  = $('bannerStatus');
+    const dot = $('bannerDot');
     st.textContent = data.enabled ? 'Banner is live on the website' : 'Banner is hidden';
     st.style.color = data.enabled ? '#10b981' : 'var(--text-light)';
+    if (dot) dot.style.background = data.enabled ? '#10b981' : '#6b7280';
   } catch {}
 }
 
@@ -1309,9 +1311,11 @@ async function saveBanner() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ enabled, offer, title }),
     });
-    const st = $('bannerStatus');
+    const st  = $('bannerStatus');
+    const dot = $('bannerDot');
     st.textContent = enabled ? 'Banner is live on the website' : 'Banner is hidden';
     st.style.color = enabled ? '#10b981' : 'var(--text-light)';
+    if (dot) dot.style.background = enabled ? '#10b981' : '#6b7280';
     showToast(enabled ? 'Banner is now live!' : 'Banner hidden');
   } catch { showToast('Failed to save banner', 'error'); }
 }
@@ -1322,6 +1326,7 @@ document.getElementById('bannerTitle').addEventListener('input', updateBannerPre
 // ── Auto-refresh every 60s ────────────────────────────────
 loadLeads();
 setInterval(loadLeads, 60000);
+loadBannerState();
 
 // ── Analytics ─────────────────────────────────────────────
 async function loadAnalytics() {
