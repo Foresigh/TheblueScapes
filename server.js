@@ -258,6 +258,33 @@ app.patch('/admin/api/settings', requireAuth, async (req, res) => {
   res.json({ success: true });
 });
 
+// ── Public: Banner ────────────────────────────────────────
+app.get('/api/banner', async (req, res) => {
+  try {
+    const [enabled, title, offer] = await Promise.all([
+      db.getSetting('banner_enabled'),
+      db.getSetting('banner_title'),
+      db.getSetting('banner_offer'),
+    ]);
+    res.json({
+      enabled: enabled === 'true',
+      title:   title  || 'Limited Time Offer',
+      offer:   offer  || '10% Off — Book Your Free Consultation Today',
+    });
+  } catch { res.json({ enabled: false, title: '', offer: '' }); }
+});
+
+// ── Admin: Banner ─────────────────────────────────────────
+app.patch('/admin/api/banner', requireAuth, async (req, res) => {
+  const { enabled, title, offer } = req.body;
+  await Promise.all([
+    db.setSetting('banner_enabled', enabled ? 'true' : 'false'),
+    db.setSetting('banner_title',   title  || ''),
+    db.setSetting('banner_offer',   offer  || ''),
+  ]);
+  res.json({ success: true });
+});
+
 function detectDevice(ua = '') {
   if (!ua) return 'Unknown';
   if (/tablet|ipad/i.test(ua)) return 'Tablet';

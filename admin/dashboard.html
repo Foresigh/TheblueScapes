@@ -590,6 +590,10 @@
         Reviews
       </a>
       <div class="sidebar__section">Site</div>
+      <a class="sidebar__item" onclick="showView('banner')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3z"/><path d="M3 10h18M3 17h18"/></svg>
+        Sale Banner
+      </a>
       <a class="sidebar__item" href="/" target="_blank">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         View Website
@@ -907,6 +911,53 @@
         <div id="testimonialsAdmin" style="display:flex;flex-direction:column;gap:12px;"></div>
       </div>
 
+      <!-- ══ SALE BANNER VIEW ══ -->
+      <div id="view-banner" style="display:none;">
+        <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px;">Sale Banner</div>
+        <div style="font-size:13px;color:var(--text-light);margin-bottom:24px;">Configure the promotional banner shown at the top of the website.</div>
+
+        <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:28px;max-width:560px;display:flex;flex-direction:column;gap:20px;">
+
+          <!-- Toggle -->
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--text);">Banner Enabled</div>
+              <div style="font-size:12px;color:var(--text-light);margin-top:2px;">Turns the banner on or off for all visitors</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="bannerToggle">
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+          <!-- Offer tag -->
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:6px;">Offer Tag <span style="color:#9ca3af;">(short label, e.g. "15% OFF")</span></label>
+            <input type="text" id="bannerOffer" placeholder="e.g. 15% OFF" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;" />
+          </div>
+
+          <!-- Title -->
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:6px;">Banner Title <span style="color:#9ca3af;">(main message)</span></label>
+            <input type="text" id="bannerTitle" placeholder="e.g. Summer Special — Book Your Free Consultation Today" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;" />
+          </div>
+
+          <!-- Preview -->
+          <div style="background:#08172e;border-radius:8px;padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;position:relative;">
+            <span id="bannerPreviewOffer" style="background:#C9A84C;color:#08172e;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;"></span>
+            <span id="bannerPreviewTitle" style="font-size:13px;font-weight:600;color:#fff;"></span>
+            <span style="font-size:11px;color:#C9A84C;border:1px solid rgba(201,168,76,0.5);border-radius:4px;padding:3px 10px;">Claim Offer</span>
+            <div style="position:absolute;top:8px;right:10px;color:rgba(255,255,255,0.4);font-size:14px;">&times;</div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div id="bannerStatus" style="font-size:13px;color:var(--text-light);flex:1;"></div>
+            <button onclick="saveBanner()" style="background:#C9A84C;color:#08172e;font-weight:700;font-size:14px;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;">Save Banner</button>
+          </div>
+
+        </div>
+      </div>
+
     </div><!-- /content -->
   </div><!-- /main -->
 </div><!-- /layout -->
@@ -974,10 +1025,11 @@ function showView(name) {
   document.querySelectorAll('[id^="view-"]').forEach(el => el.style.display = 'none');
   $(`view-${name}`).style.display = 'block';
   document.querySelectorAll('.sidebar__item').forEach(el => el.classList.remove('active'));
-  const titles = { leads: 'Leads', analytics: 'Analytics', testimonials: 'Reviews' };
+  const titles = { leads: 'Leads', analytics: 'Analytics', testimonials: 'Reviews', banner: 'Sale Banner' };
   $('viewTitle').textContent = titles[name] || name;
   if (name === 'analytics')    loadAnalytics();
   if (name === 'testimonials') loadTestimonials();
+  if (name === 'banner')       loadBannerState();
 }
 
 // ── Load data ─────────────────────────────────────────────
@@ -1226,6 +1278,46 @@ async function deleteT(id) {
   showToast('Review deleted');
   loadTestimonials();
 }
+
+// ── Sale Banner ───────────────────────────────────────────
+async function loadBannerState() {
+  try {
+    const res  = await fetch('/api/banner');
+    const data = await res.json();
+    $('bannerToggle').checked = data.enabled;
+    $('bannerOffer').value    = data.offer  || '';
+    $('bannerTitle').value    = data.title  || '';
+    updateBannerPreview();
+    const st = $('bannerStatus');
+    st.textContent = data.enabled ? 'Banner is live on the website' : 'Banner is hidden';
+    st.style.color = data.enabled ? '#10b981' : 'var(--text-light)';
+  } catch {}
+}
+
+function updateBannerPreview() {
+  $('bannerPreviewOffer').textContent = $('bannerOffer').value || 'OFFER';
+  $('bannerPreviewTitle').textContent = $('bannerTitle').value || 'Your banner message here';
+}
+
+async function saveBanner() {
+  const enabled = $('bannerToggle').checked;
+  const offer   = $('bannerOffer').value.trim();
+  const title   = $('bannerTitle').value.trim();
+  try {
+    await authFetch('/admin/api/banner', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enabled, offer, title }),
+    });
+    const st = $('bannerStatus');
+    st.textContent = enabled ? 'Banner is live on the website' : 'Banner is hidden';
+    st.style.color = enabled ? '#10b981' : 'var(--text-light)';
+    showToast(enabled ? 'Banner is now live!' : 'Banner hidden');
+  } catch { showToast('Failed to save banner', 'error'); }
+}
+
+document.getElementById('bannerOffer').addEventListener('input', updateBannerPreview);
+document.getElementById('bannerTitle').addEventListener('input', updateBannerPreview);
 
 // ── Auto-refresh every 60s ────────────────────────────────
 loadLeads();
