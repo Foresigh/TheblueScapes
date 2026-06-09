@@ -6,11 +6,11 @@ const { Resend } = require('resend');
 const db         = require('./db/setup');
 
 // ── Email setup ───────────────────────────────────────────
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const FROM   = process.env.FROM_EMAIL || 'BlueScapes <onboarding@resend.dev>';
 
 async function sendConfirmationEmail(lead) {
-  if (!process.env.RESEND_API_KEY) return;
+  if (!resend) return;
   if (!lead.email) return;
   await resend.emails.send({
     from: FROM,
@@ -42,7 +42,7 @@ async function sendConfirmationEmail(lead) {
 }
 
 async function sendLeadEmail(lead) {
-  if (!process.env.RESEND_API_KEY) return;
+  if (!resend) return;
   const to = process.env.NOTIFY_EMAIL || 'bluescapesutah@gmail.com';
   await resend.emails.send({
     from: FROM,
