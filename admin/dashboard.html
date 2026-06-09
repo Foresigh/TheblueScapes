@@ -549,6 +549,11 @@
     .event-name { display:flex; align-items:center; gap:7px; }
     .event-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
 
+    /* ── Banner Panel Toggle (light bg override) ── */
+    #view-banner .toggle-track { background: #cbd5e1; }
+    #view-banner .toggle-switch input:checked + .toggle-track { background: #10b981; }
+    #view-banner .toggle-switch input:checked + .toggle-track::after { transform: translateX(18px); }
+
     /* ── Responsive ── */
     @media (max-width: 900px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }

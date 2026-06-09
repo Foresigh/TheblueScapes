@@ -2685,15 +2685,22 @@
         const data = await res.json();
         if (!data.enabled) return;
         if (sessionStorage.getItem('bannerDismissed')) return;
-        document.getElementById('bannerOfferText').textContent = data.offer;
-        document.getElementById('bannerTitleText').textContent = data.title;
+        const offerEl = document.getElementById('bannerOfferText');
+        const titleEl = document.getElementById('bannerTitleText');
+        if (data.offer) offerEl.textContent = data.offer;
+        else offerEl.style.display = 'none';
+        titleEl.textContent = data.title || '';
         const banner = document.getElementById('saleBanner');
+        const nav    = document.getElementById('mainNav');
+        const hero   = document.querySelector('.hero');
         banner.classList.add('is-visible');
-        // Push navbar down
-        document.getElementById('mainNav').style.top = banner.offsetHeight + 'px';
+        const bh = banner.offsetHeight;
+        nav.style.top = bh + 'px';
+        if (hero) hero.style.paddingTop = (70 + bh) + 'px';
         document.getElementById('bannerClose').addEventListener('click', () => {
           banner.classList.remove('is-visible');
-          document.getElementById('mainNav').style.top = '0';
+          nav.style.top = '0';
+          if (hero) hero.style.paddingTop = '70px';
           sessionStorage.setItem('bannerDismissed', '1');
         });
       } catch {}
