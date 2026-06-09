@@ -2,23 +2,18 @@ const express    = require('express');
 const crypto     = require('crypto');
 const path       = require('path');
 const geoip      = require('geoip-lite');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const db         = require('./db/setup');
 
 // ── Email setup ───────────────────────────────────────────
-const mailer = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM   = process.env.FROM_EMAIL || 'BlueScapes <onboarding@resend.dev>';
 
 async function sendConfirmationEmail(lead) {
-  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) return;
+  if (!process.env.RESEND_API_KEY) return;
   if (!lead.email) return;
-  await mailer.sendMail({
-    from: `"BlueScapes" <${process.env.GMAIL_USER}>`,
+  await resend.emails.send({
+    from: FROM,
     to: lead.email,
     subject: `We received your request, ${lead.first_name}!`,
     html: `
@@ -47,10 +42,10 @@ async function sendConfirmationEmail(lead) {
 }
 
 async function sendLeadEmail(lead) {
-  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) return;
-  const to = process.env.NOTIFY_EMAIL || process.env.GMAIL_USER;
-  await mailer.sendMail({
-    from: `"BlueScapes Website" <${process.env.GMAIL_USER}>`,
+  if (!process.env.RESEND_API_KEY) return;
+  const to = process.env.NOTIFY_EMAIL || 'bluescapesutah@gmail.com';
+  await resend.emails.send({
+    from: FROM,
     to,
     subject: `New Quote Request — ${lead.first_name} ${lead.last_name}`,
     html: `
