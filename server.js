@@ -119,9 +119,9 @@ function parseMessageFields(message) {
 
 async function sendLeadEmail(lead) {
   if (!resend) { console.log('[email] RESEND_API_KEY not set — skipping lead notification'); return; }
-  const to = (process.env.NOTIFY_EMAIL || 'dcooper@bluescapes.co')
+  const recipients = (process.env.NOTIFY_EMAIL || 'dcooper@bluescapes.co')
     .split(',').map(e => e.trim()).filter(Boolean);
-  console.log(`[email] Sending lead notification to ${to.join(', ')}`);
+  console.log(`[email] Sending lead notification to ${recipients.join(', ')}`);
   const { fields, details } = parseMessageFields(lead.message);
   const extraRows = fields.map(f =>
     `<tr><td style="padding:10px 0;color:#6b7280;width:160px;vertical-align:top;border-bottom:1px solid #f3f4f6;">${f.label}</td>` +
@@ -135,49 +135,49 @@ async function sendLeadEmail(lead) {
       </td>
     </tr>` : '';
 
-  await resend.emails.send({
-    from: FROM,
-    to,
-    subject: `New Quote Request — ${lead.first_name} ${lead.last_name}`,
-    html: `
-      <div style="font-family:sans-serif;max-width:620px;margin:0 auto;border-radius:8px;overflow:hidden;">
-        ${EMAIL_HEADER}
-        <div style="background:#fff;padding:24px 28px;">
-          <p style="color:#6b7280;font-size:12px;margin:0 0 20px;">Submitted ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}</p>
-          <table style="width:100%;border-collapse:collapse;font-size:14px;">
+  const subject = `New Quote Request — ${lead.first_name} ${lead.last_name}`;
+  const html = `
+    <div style="font-family:sans-serif;max-width:620px;margin:0 auto;border-radius:8px;overflow:hidden;">
+      ${EMAIL_HEADER}
+      <div style="background:#fff;padding:24px 28px;">
+        <p style="color:#6b7280;font-size:12px;margin:0 0 20px;">Submitted ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}</p>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <tr>
+            <td style="padding:10px 0;color:#6b7280;width:160px;border-bottom:1px solid #f3f4f6;">Name</td>
+            <td style="padding:10px 0;font-weight:700;font-size:16px;color:#08172e;border-bottom:1px solid #f3f4f6;">${lead.first_name} ${lead.last_name}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;color:#6b7280;border-bottom:1px solid #f3f4f6;">Email</td>
+            <td style="padding:10px 0;border-bottom:1px solid #f3f4f6;"><a href="mailto:${lead.email}" style="color:#0078B8;text-decoration:none;font-weight:500;">${lead.email}</a></td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;color:#6b7280;border-bottom:1px solid #f3f4f6;">Phone</td>
+            <td style="padding:10px 0;border-bottom:1px solid #f3f4f6;"><a href="tel:${lead.phone}" style="color:#0078B8;text-decoration:none;font-weight:500;">${lead.phone}</a></td>
+          </tr>
+          ${extraRows}
+          ${detailsRow}
+        </table>
+        <div style="margin-top:24px;padding-top:20px;border-top:1px solid #f3f4f6;">
+          <table role="presentation" cellpadding="0" cellspacing="0">
             <tr>
-              <td style="padding:10px 0;color:#6b7280;width:160px;border-bottom:1px solid #f3f4f6;">Name</td>
-              <td style="padding:10px 0;font-weight:700;font-size:16px;color:#08172e;border-bottom:1px solid #f3f4f6;">${lead.first_name} ${lead.last_name}</td>
+              <td style="padding-right:10px;">
+                <a href="mailto:${lead.email}" style="background:#08172e;color:#fff;padding:11px 20px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px;display:inline-block;">Reply to ${lead.first_name}</a>
+              </td>
+              <td>
+                <a href="${SITE_URL}/admin" style="background:#C9A84C;color:#08172e;padding:11px 20px;border-radius:6px;text-decoration:none;font-weight:700;font-size:13px;display:inline-block;">View in Dashboard</a>
+              </td>
             </tr>
-            <tr>
-              <td style="padding:10px 0;color:#6b7280;border-bottom:1px solid #f3f4f6;">Email</td>
-              <td style="padding:10px 0;border-bottom:1px solid #f3f4f6;"><a href="mailto:${lead.email}" style="color:#0078B8;text-decoration:none;font-weight:500;">${lead.email}</a></td>
-            </tr>
-            <tr>
-              <td style="padding:10px 0;color:#6b7280;border-bottom:1px solid #f3f4f6;">Phone</td>
-              <td style="padding:10px 0;border-bottom:1px solid #f3f4f6;"><a href="tel:${lead.phone}" style="color:#0078B8;text-decoration:none;font-weight:500;">${lead.phone}</a></td>
-            </tr>
-            ${extraRows}
-            ${detailsRow}
           </table>
-          <div style="margin-top:24px;padding-top:20px;border-top:1px solid #f3f4f6;">
-            <table role="presentation" cellpadding="0" cellspacing="0">
-              <tr>
-                <td style="padding-right:10px;">
-                  <a href="mailto:${lead.email}" style="background:#08172e;color:#fff;padding:11px 20px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px;display:inline-block;">Reply to ${lead.first_name}</a>
-                </td>
-                <td>
-                  <a href="${SITE_URL}/admin" style="background:#C9A84C;color:#08172e;padding:11px 20px;border-radius:6px;text-decoration:none;font-weight:700;font-size:13px;display:inline-block;">View in Dashboard</a>
-                </td>
-              </tr>
-            </table>
-          </div>
         </div>
-        ${EMAIL_FOOTER}
       </div>
-    `,
-  });
-  console.log(`[email] Lead notification sent to ${to.join(', ')}`);
+      ${EMAIL_FOOTER}
+    </div>`;
+
+  await Promise.all(recipients.map(to =>
+    resend.emails.send({ from: FROM, to, subject, html })
+      .then(() => console.log(`[email] Lead notification sent to ${to}`))
+      .catch(err => console.error(`[email] Failed to send to ${to}:`, err.message || err))
+  ));
 }
 
 const app  = express();
