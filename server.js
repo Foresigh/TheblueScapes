@@ -19,21 +19,21 @@ async function sendConfirmationEmail(lead) {
     html: `
       <div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
         <div style="background:#08172e;padding:32px 24px;border-radius:8px 8px 0 0;text-align:center;">
-          <h1 style="color:#C9A84C;margin:0;font-size:28px;">BLUE<span style="color:#fff;">SCAPES</span></h1>
-          <p style="color:#aaa;margin:8px 0 0;font-size:14px;">Utah's Custom Pool Builders</p>
+          <h1 style="color:#C9A84C;margin:0;font-size:28px;letter-spacing:-0.5px;">BLUE<span style="color:#fff;">SCAPES</span></h1>
+          <p style="color:#aaa;margin:8px 0 0;font-size:14px;">Utah's Premier Custom Pool Builders</p>
         </div>
-        <div style="border:1px solid #e5e7eb;border-top:none;padding:32px 24px;border-radius:0 0 8px 8px;">
-          <h2 style="color:#08172e;margin:0 0 16px;">Thanks, ${lead.first_name}! We got your request.</h2>
-          <p style="color:#4b5563;line-height:1.7;">We've received your quote request and one of our team members will be in touch with you within <strong>1–2 business days</strong> to schedule your free consultation.</p>
-          <p style="color:#4b5563;line-height:1.7;">In the meantime, if you have any urgent questions feel free to reach us directly:</p>
-          <div style="background:#f9fafb;border-radius:8px;padding:16px 20px;margin:20px 0;">
-            <p style="margin:0 0 8px;color:#08172e;"><strong>📞</strong> &nbsp;<a href="tel:8013605577" style="color:#0078B8;text-decoration:none;">801.360.5577</a></p>
-            <p style="margin:0;color:#08172e;"><strong>✉️</strong> &nbsp;<a href="mailto:bluescapesutah@gmail.com" style="color:#0078B8;text-decoration:none;">bluescapesutah@gmail.com</a></p>
+        <div style="border:1px solid #e5e7eb;border-top:none;padding:32px 24px;border-radius:0 0 8px 8px;background:#fff;">
+          <h2 style="color:#08172e;margin:0 0 16px;">Thanks, ${lead.first_name}! We received your request.</h2>
+          <p style="color:#4b5563;line-height:1.7;margin:0 0 14px;">Your quote request has been received and a member of our team will be in touch within <strong>1–2 business days</strong> to schedule your free consultation.</p>
+          <p style="color:#4b5563;line-height:1.7;margin:0 0 20px;">For urgent questions, reach us directly:</p>
+          <div style="background:#f9fafb;border-radius:8px;padding:16px 20px;margin:0 0 24px;">
+            <p style="margin:0 0 8px;color:#08172e;font-size:15px;"><strong>📞</strong> &nbsp;<a href="tel:8013605577" style="color:#0078B8;text-decoration:none;">801.360.5577</a></p>
+            <p style="margin:0;color:#08172e;font-size:15px;"><strong>✉️</strong> &nbsp;<a href="mailto:dcooper@bluescapes.co" style="color:#0078B8;text-decoration:none;">dcooper@bluescapes.co</a></p>
           </div>
-          <p style="color:#4b5563;line-height:1.7;">We look forward to building something extraordinary for your family.</p>
-          <p style="color:#4b5563;margin:0;">— The BlueScapes Team</p>
+          <p style="color:#4b5563;line-height:1.7;margin:0 0 6px;">We look forward to building something extraordinary for your family.</p>
+          <p style="color:#4b5563;margin:0;font-weight:600;">— The BlueScapes Team</p>
           <div style="margin-top:32px;padding-top:20px;border-top:1px solid #e5e7eb;text-align:center;">
-            <p style="color:#9ca3af;font-size:12px;margin:0;">BlueScapes Utah &nbsp;·&nbsp; 801.360.5577 &nbsp;·&nbsp; bluescapesutah.com</p>
+            <p style="color:#9ca3af;font-size:12px;margin:0;">BlueScapes Utah &nbsp;·&nbsp; 801.360.5577 &nbsp;·&nbsp; dcooper@bluescapes.co</p>
           </div>
         </div>
       </div>
@@ -41,28 +41,69 @@ async function sendConfirmationEmail(lead) {
   });
 }
 
+function parseMessageFields(message) {
+  const lines = (message || '').split('\n');
+  const fields = [];
+  let details = '';
+  for (const line of lines) {
+    const sep = line.indexOf(': ');
+    if (sep > 0 && !line.startsWith('Project Details')) {
+      fields.push({ label: line.slice(0, sep), value: line.slice(sep + 2) });
+    } else if (line.startsWith('Project Details: ')) {
+      details = line.slice('Project Details: '.length);
+    }
+  }
+  return { fields, details };
+}
+
 async function sendLeadEmail(lead) {
   if (!resend) return;
-  const to = process.env.NOTIFY_EMAIL || 'bluescapesutah@gmail.com';
+  const to = process.env.NOTIFY_EMAIL || 'dcooper@bluescapes.co';
+  const { fields, details } = parseMessageFields(lead.message);
+  const extraRows = fields.map(f =>
+    `<tr><td style="padding:10px 0;color:#6b7280;width:160px;vertical-align:top;border-bottom:1px solid #f3f4f6;">${f.label}</td>` +
+    `<td style="padding:10px 0;font-weight:500;border-bottom:1px solid #f3f4f6;">${f.value}</td></tr>`
+  ).join('');
+  const detailsRow = details ? `
+    <tr>
+      <td colspan="2" style="padding:16px 0 0;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9ca3af;margin-bottom:8px;">Project Details</div>
+        <div style="background:#f9fafb;border-radius:6px;padding:14px 16px;color:#374151;line-height:1.7;font-size:14px;">${details.replace(/</g, '&lt;').replace(/\n/g, '<br>')}</div>
+      </td>
+    </tr>` : '';
+
   await resend.emails.send({
     from: FROM,
     to,
     subject: `New Quote Request — ${lead.first_name} ${lead.last_name}`,
     html: `
-      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
-        <div style="background:#08172e;padding:24px;border-radius:8px 8px 0 0;">
-          <h2 style="color:#C9A84C;margin:0;">New Quote Request</h2>
-          <p style="color:#aaa;margin:4px 0 0;">BlueScapes Website</p>
+      <div style="font-family:sans-serif;max-width:620px;margin:0 auto;">
+        <div style="background:#08172e;padding:24px 28px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <h2 style="color:#C9A84C;margin:0;font-size:20px;letter-spacing:-0.3px;">New Quote Request</h2>
+            <p style="color:#aaa;margin:4px 0 0;font-size:13px;">BlueScapes Website — ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}</p>
+          </div>
         </div>
-        <div style="border:1px solid #e5e7eb;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
-          <table style="width:100%;border-collapse:collapse;">
-            <tr><td style="padding:8px 0;color:#6b7280;width:140px;">Name</td><td style="padding:8px 0;font-weight:600;">${lead.first_name} ${lead.last_name}</td></tr>
-            <tr><td style="padding:8px 0;color:#6b7280;">Email</td><td style="padding:8px 0;"><a href="mailto:${lead.email}">${lead.email}</a></td></tr>
-            <tr><td style="padding:8px 0;color:#6b7280;">Phone</td><td style="padding:8px 0;"><a href="tel:${lead.phone}">${lead.phone}</a></td></tr>
-            <tr><td style="padding:8px 0;color:#6b7280;vertical-align:top;">Details</td><td style="padding:8px 0;white-space:pre-wrap;">${(lead.message || '').replace(/</g, '&lt;')}</td></tr>
+        <div style="border:1px solid #e5e7eb;border-top:none;padding:24px 28px;border-radius:0 0 8px 8px;background:#fff;">
+          <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <tr>
+              <td style="padding:10px 0;color:#6b7280;width:160px;border-bottom:1px solid #f3f4f6;">Name</td>
+              <td style="padding:10px 0;font-weight:700;font-size:16px;color:#08172e;border-bottom:1px solid #f3f4f6;">${lead.first_name} ${lead.last_name}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 0;color:#6b7280;border-bottom:1px solid #f3f4f6;">Email</td>
+              <td style="padding:10px 0;border-bottom:1px solid #f3f4f6;"><a href="mailto:${lead.email}" style="color:#0078B8;text-decoration:none;font-weight:500;">${lead.email}</a></td>
+            </tr>
+            <tr>
+              <td style="padding:10px 0;color:#6b7280;border-bottom:1px solid #f3f4f6;">Phone</td>
+              <td style="padding:10px 0;border-bottom:1px solid #f3f4f6;"><a href="tel:${lead.phone}" style="color:#0078B8;text-decoration:none;font-weight:500;">${lead.phone}</a></td>
+            </tr>
+            ${extraRows}
+            ${detailsRow}
           </table>
-          <div style="margin-top:24px;">
-            <a href="https://bluescapesutah.com/admin" style="background:#C9A84C;color:#08172e;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:700;">View in Admin Dashboard</a>
+          <div style="margin-top:28px;padding-top:20px;border-top:1px solid #e5e7eb;display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="mailto:${lead.email}" style="background:#08172e;color:#fff;padding:11px 20px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px;">Reply to ${lead.first_name}</a>
+            <a href="https://bluescapesutah.com/admin" style="background:#C9A84C;color:#08172e;padding:11px 20px;border-radius:6px;text-decoration:none;font-weight:700;font-size:13px;">View in Dashboard</a>
           </div>
         </div>
       </div>
