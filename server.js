@@ -282,8 +282,8 @@ app.post('/api/contact', async (req, res) => {
       referrer:     req.get('referer') || '',
     });
     res.json({ success: true, id: lead.id });
-    sendLeadEmail(lead).catch(err => console.error('Email error:', err.message));
-    sendConfirmationEmail(lead).catch(err => console.error('Confirmation email error:', err.message));
+    sendLeadEmail(lead).catch(err => console.error('Email error:', err.message || err));
+    sendConfirmationEmail(lead).catch(err => console.error('Confirmation email error:', err.message || err));
   } catch (err) {
     console.error('insertLead error:', err.message);
     res.status(500).json({ error: 'Could not save lead' });
