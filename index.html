@@ -1504,6 +1504,69 @@
     .hear-extra.show { display: block; }
     .hear-extra:focus { border-color: var(--cyan); }
 
+    /* ─── GALLERY ───────────────────────────────────────── */
+    .gallery-section {
+      background: #060f1d;
+      padding: 80px 0 90px;
+    }
+    .gallery-section .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .gallery__header { text-align: center; margin-bottom: 48px; }
+    .gallery__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .gallery__item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      aspect-ratio: 4/3;
+      background: #0d1f3a;
+      cursor: pointer;
+    }
+    .gallery__item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform .4s ease;
+      display: block;
+    }
+    .gallery__item:hover img { transform: scale(1.06); }
+    .gallery__item__overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(8,23,46,0.85) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity .3s;
+      display: flex; align-items: flex-end; padding: 16px;
+    }
+    .gallery__item:hover .gallery__item__overlay { opacity: 1; }
+    .gallery__item__title { color: #fff; font-size: 14px; font-weight: 600; }
+    .gallery__empty {
+      grid-column: 1/-1; text-align: center;
+      padding: 60px 24px; color: rgba(255,255,255,0.3); font-size: 15px;
+    }
+    /* Lightbox */
+    .gallery-lightbox {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.92); z-index: 9999;
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    .gallery-lightbox.open { display: flex; }
+    .gallery-lightbox__img { max-width: 90vw; max-height: 85vh; border-radius: 8px; object-fit: contain; }
+    .gallery-lightbox__close {
+      position: absolute; top: 20px; right: 24px;
+      background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; line-height: 1;
+    }
+    .gallery-lightbox__caption {
+      position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+      color: #fff; font-size: 14px; font-weight: 500; text-align: center; white-space: nowrap;
+    }
+    @media (max-width: 768px) {
+      .gallery__grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .gallery__grid { grid-template-columns: 1fr; }
+    }
+
     /* ─── 10. FOOTER ────────────────────────────────────── */
     .footer {
       background: #060F1D;
@@ -2013,6 +2076,29 @@
       </div>
     </div>
   </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       OUR WORK GALLERY
+  ═══════════════════════════════════════════════════ -->
+  <section class="gallery-section" id="gallery">
+    <div class="container">
+      <div class="gallery__header reveal">
+        <div class="tag">Our Work</div>
+        <h2 class="headline headline--white">Pools We've <span class="accent">Built</span></h2>
+        <p class="subheadline subheadline--white" style="margin:16px auto 0;max-width:560px;">Every project tells a story. Browse our recent builds and imagine what we can create for you.</p>
+      </div>
+      <div class="gallery__grid" id="galleryGrid">
+        <div class="gallery__empty">Loading gallery…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div class="gallery-lightbox" id="galleryLightbox">
+    <button class="gallery-lightbox__close" id="lightboxClose">&times;</button>
+    <img class="gallery-lightbox__img" id="lightboxImg" src="" alt="" />
+    <div class="gallery-lightbox__caption" id="lightboxCaption"></div>
+  </div>
 
   <!-- ═══════════════════════════════════════════════════
        6. MID-PAGE CTA
@@ -2678,6 +2764,39 @@
       });
     }, { threshold: 0.4 });
     document.querySelectorAll('section[id], div[id]').forEach(s => sectionObserver.observe(s));
+
+    // ── Gallery ───────────────────────────────────────────
+    (async function initGallery() {
+      try {
+        const images = await fetch('/api/portfolio').then(r => r.json());
+        const grid = document.getElementById('galleryGrid');
+        if (!images.length) {
+          grid.innerHTML = '<div class="gallery__empty">Our gallery is coming soon. Check back for photos of our latest builds.</div>';
+          return;
+        }
+        grid.innerHTML = images.map(img => `
+          <div class="gallery__item" onclick="openLightbox('/api/portfolio/${img.id}/image','${(img.title||'').replace(/'/g,"&#39;")}')">
+            <img src="/api/portfolio/${img.id}/image" alt="${(img.title||'BlueScapes project').replace(/"/g,'&quot;')}" loading="lazy" />
+            <div class="gallery__item__overlay">
+              ${img.title ? `<div class="gallery__item__title">${img.title}</div>` : ''}
+            </div>
+          </div>`).join('');
+      } catch {}
+    })();
+
+    function openLightbox(src, caption) {
+      document.getElementById('lightboxImg').src = src;
+      document.getElementById('lightboxCaption').textContent = caption;
+      document.getElementById('galleryLightbox').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    document.getElementById('lightboxClose').addEventListener('click', () => {
+      document.getElementById('galleryLightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+    document.getElementById('galleryLightbox').addEventListener('click', function(e) {
+      if (e.target === this) { this.classList.remove('open'); document.body.style.overflow = ''; }
+    });
 
     // ── Sale Banner ───────────────────────────────────────
     (async function initBanner() {

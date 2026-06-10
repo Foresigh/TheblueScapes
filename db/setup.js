@@ -62,6 +62,19 @@ async function init() {
     INSERT INTO settings (key, value) VALUES ('under_construction', 'false')
     ON CONFLICT (key) DO NOTHING
   `);
+
+  // Portfolio images table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS portfolio_images (
+      id            SERIAL PRIMARY KEY,
+      created_at    TIMESTAMPTZ DEFAULT NOW(),
+      title         TEXT DEFAULT '',
+      description   TEXT DEFAULT '',
+      image_data    TEXT NOT NULL,
+      mime_type     TEXT DEFAULT 'image/jpeg',
+      display_order INT  DEFAULT 0
+    )
+  `);
 }
 
 // ── Leads ─────────────────────────────────────────────────
@@ -298,4 +311,39 @@ async function deleteTestimonial(id) {
   await pool.query(`DELETE FROM testimonials WHERE id=$1`, [id]);
 }
 
-module.exports = { init, insertLead, queryLeads, updateLead, deleteLead, getStats, getAnalytics, insertEvent, getTopIPs, getSetting, setSetting, insertTestimonial, getApprovedTestimonials, getAllTestimonials, updateTestimonialStatus, deleteTestimonial };
+// ── Portfolio ─────────────────────────────────────────────
+async function insertPortfolioImage({ title, description, image_data, mime_type, display_order }) {
+  const { rows } = await pool.query(
+    `INSERT INTO portfolio_images (title, description, image_data, mime_type, display_order)
+     VALUES ($1,$2,$3,$4,$5) RETURNING id, title, description, display_order, created_at`,
+    [title || '', description || '', image_data, mime_type || 'image/jpeg', display_order || 0]
+  );
+  return rows[0];
+}
+
+async function getPortfolioImages() {
+  const { rows } = await pool.query(
+    `SELECT id, title, description, display_order, created_at FROM portfolio_images ORDER BY display_order ASC, created_at DESC`
+  );
+  return rows;
+}
+
+async function getPortfolioImageData(id) {
+  const { rows } = await pool.query(
+    `SELECT image_data, mime_type FROM portfolio_images WHERE id=$1`, [id]
+  );
+  return rows[0] || null;
+}
+
+async function deletePortfolioImage(id) {
+  await pool.query(`DELETE FROM portfolio_images WHERE id=$1`, [id]);
+}
+
+async function updatePortfolioImage(id, { title, description, display_order }) {
+  await pool.query(
+    `UPDATE portfolio_images SET title=$1, description=$2, display_order=$3 WHERE id=$4`,
+    [title || '', description || '', display_order ?? 0, id]
+  );
+}
+
+module.exports = { init, insertLead, queryLeads, updateLead, deleteLead, getStats, getAnalytics, insertEvent, getTopIPs, getSetting, setSetting, insertTestimonial, getApprovedTestimonials, getAllTestimonials, updateTestimonialStatus, deleteTestimonial, insertPortfolioImage, getPortfolioImages, getPortfolioImageData, deletePortfolioImage, updatePortfolioImage };

@@ -466,6 +466,48 @@ app.get('/admin/api/export', requireAuth, async (req, res) => {
   res.send(csv);
 });
 
+// ── Public: Portfolio Images ──────────────────────────────
+app.get('/api/portfolio', async (req, res) => {
+  try {
+    const images = await db.getPortfolioImages();
+    res.json(images);
+  } catch { res.json([]); }
+});
+
+app.get('/api/portfolio/:id/image', async (req, res) => {
+  try {
+    const row = await db.getPortfolioImageData(req.params.id);
+    if (!row) return res.status(404).end();
+    const buf = Buffer.from(row.image_data, 'base64');
+    res.setHeader('Content-Type', row.mime_type);
+    res.setHeader('Cache-Control', 'public, max-age=31536000');
+    res.send(buf);
+  } catch { res.status(500).end(); }
+});
+
+// ── Admin: Portfolio ──────────────────────────────────────
+app.post('/admin/api/portfolio', requireAuth, async (req, res) => {
+  const { title, description, image_data, mime_type, display_order } = req.body;
+  if (!image_data) return res.status(400).json({ error: 'No image data' });
+  try {
+    const img = await db.insertPortfolioImage({ title, description, image_data, mime_type, display_order });
+    res.json({ success: true, image: img });
+  } catch (err) {
+    console.error('portfolio upload error:', err.message);
+    res.status(500).json({ error: 'Upload failed' });
+  }
+});
+
+app.patch('/admin/api/portfolio/:id', requireAuth, async (req, res) => {
+  await db.updatePortfolioImage(req.params.id, req.body);
+  res.json({ success: true });
+});
+
+app.delete('/admin/api/portfolio/:id', requireAuth, async (req, res) => {
+  await db.deletePortfolioImage(req.params.id);
+  res.json({ success: true });
+});
+
 // ── Fallback ──────────────────────────────────────────────
 app.get('*', (req, res) => res.redirect('/'));
 
