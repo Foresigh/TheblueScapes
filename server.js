@@ -8,7 +8,7 @@ const db         = require('./db/setup');
 // ── Email setup ───────────────────────────────────────────
 const resend   = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const FROM     = process.env.FROM_EMAIL || 'BlueScapes <onboarding@resend.dev>';
-const SITE_URL = process.env.SITE_URL   || 'https://bluescapesutah.com';
+const SITE_URL = (process.env.SITE_URL || 'https://www.bluescapes.co').replace(/\/$/, '');
 
 const LOGO_SRC = `${SITE_URL}/images/logo.PNG`;
 
