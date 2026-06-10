@@ -117,7 +117,8 @@ function parseMessageFields(message) {
 
 async function sendLeadEmail(lead) {
   if (!resend) return;
-  const to = process.env.NOTIFY_EMAIL || 'dcooper@bluescapes.co';
+  const to = (process.env.NOTIFY_EMAIL || 'dcooper@bluescapes.co')
+    .split(',').map(e => e.trim()).filter(Boolean);
   const { fields, details } = parseMessageFields(lead.message);
   const extraRows = fields.map(f =>
     `<tr><td style="padding:10px 0;color:#6b7280;width:160px;vertical-align:top;border-bottom:1px solid #f3f4f6;">${f.label}</td>` +
