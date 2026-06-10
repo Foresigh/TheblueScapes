@@ -83,23 +83,31 @@ async function sendConfirmationEmail(lead) {
     from: FROM,
     to: lead.email,
     subject: `We received your request, ${lead.first_name}!`,
-    html: `
-      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;border-radius:8px;overflow:hidden;">
-        ${EMAIL_HEADER}
-        <div style="background:#fff;padding:32px 28px;">
-          <h2 style="color:#08172e;margin:0 0 16px;font-size:20px;">Thanks, ${lead.first_name}! We received your request.</h2>
-          <p style="color:#4b5563;line-height:1.7;margin:0 0 14px;">Your quote request has been received and a member of our team will be in touch within <strong>1–2 business days</strong> to schedule your free consultation.</p>
-          <p style="color:#4b5563;line-height:1.7;margin:0 0 20px;">For urgent questions, reach us directly:</p>
-          <div style="background:#f9fafb;border-radius:8px;padding:16px 20px;margin:0 0 24px;">
-            <p style="margin:0 0 8px;color:#08172e;font-size:15px;"><strong>📞</strong> &nbsp;<a href="tel:8013605577" style="color:#0078B8;text-decoration:none;">801.360.5577</a></p>
-            <p style="margin:0;color:#08172e;font-size:15px;"><strong>✉️</strong> &nbsp;<a href="mailto:dcooper@bluescapes.co" style="color:#0078B8;text-decoration:none;">dcooper@bluescapes.co</a></p>
-          </div>
-          <p style="color:#4b5563;line-height:1.7;margin:0 0 6px;">We look forward to building something extraordinary for your family.</p>
-          <p style="color:#4b5563;margin:0;font-weight:600;">— The BlueScapes Team</p>
-        </div>
-        ${EMAIL_FOOTER}
-      </div>
-    `,
+    html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
+<div style="background:#08172e;padding:32px 24px;border-radius:8px 8px 0 0;text-align:center;">
+<img src="${LOGO_SRC}" alt="BlueScapes" width="100" style="display:block;margin:0 auto 16px;border-radius:50%;"/>
+<div style="display:inline-flex;align-items:center;gap:10px;">
+<div style="height:1px;width:40px;background:linear-gradient(to right,transparent,#C9A84C);"></div>
+<span style="font-family:Georgia,serif;font-size:26px;font-weight:700;letter-spacing:2px;color:#00AEEF;">BLUE</span><span style="font-family:Georgia,serif;font-size:26px;font-weight:700;letter-spacing:2px;color:#fff;">SCAPES</span>
+<div style="height:1px;width:40px;background:linear-gradient(to left,transparent,#C9A84C);"></div>
+</div>
+<p style="color:#C9A84C;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin:10px 0 0;">Utah's Premier Custom Pool Builders</p>
+</div>
+<div style="background:#fff;padding:28px 24px;border:1px solid #e5e7eb;border-top:none;">
+<h2 style="color:#08172e;margin:0 0 14px;font-size:19px;">Thanks, ${lead.first_name}! We received your request.</h2>
+<p style="color:#4b5563;line-height:1.7;margin:0 0 12px;">Your quote request has been received and a member of our team will be in touch within <strong>1–2 business days</strong> to schedule your free consultation.</p>
+<p style="color:#4b5563;line-height:1.7;margin:0 0 16px;">For urgent questions, reach us directly:</p>
+<div style="background:#f9fafb;border-radius:8px;padding:14px 18px;margin:0 0 20px;">
+<p style="margin:0 0 6px;color:#08172e;">📞 <a href="tel:8013605577" style="color:#0078B8;text-decoration:none;">801.360.5577</a></p>
+<p style="margin:0;color:#08172e;">✉️ <a href="mailto:dcooper@bluescapes.co" style="color:#0078B8;text-decoration:none;">dcooper@bluescapes.co</a></p>
+</div>
+<p style="color:#4b5563;margin:0 0 4px;">We look forward to building something extraordinary for your family.</p>
+<p style="color:#4b5563;margin:0;font-weight:600;">— The BlueScapes Team</p>
+</div>
+<div style="background:#06111f;padding:16px 24px;border-radius:0 0 8px 8px;text-align:center;">
+<p style="color:#4a6080;font-size:12px;margin:0;">BlueScapes Utah &nbsp;·&nbsp; 801.360.5577 &nbsp;·&nbsp; <a href="mailto:dcooper@bluescapes.co" style="color:#4a6080;text-decoration:none;">dcooper@bluescapes.co</a></p>
+</div>
+</div>`,
   });
   console.log(`[email] Confirmation sent — id: ${result?.data?.id || 'unknown'}`);
 }
