@@ -74,9 +74,10 @@ const EMAIL_FOOTER = `
   </div>`;
 
 async function sendConfirmationEmail(lead) {
-  if (!resend) return;
+  if (!resend) { console.log('[email] RESEND_API_KEY not set — skipping confirmation'); return; }
   if (!lead.email) return;
-  await resend.emails.send({
+  console.log(`[email] Sending confirmation to ${lead.email}`);
+  const result = await resend.emails.send({
     from: FROM,
     to: lead.email,
     subject: `We received your request, ${lead.first_name}!`,
@@ -98,6 +99,7 @@ async function sendConfirmationEmail(lead) {
       </div>
     `,
   });
+  console.log(`[email] Confirmation sent — id: ${result?.data?.id || 'unknown'}`);
 }
 
 function parseMessageFields(message) {
@@ -116,9 +118,10 @@ function parseMessageFields(message) {
 }
 
 async function sendLeadEmail(lead) {
-  if (!resend) return;
+  if (!resend) { console.log('[email] RESEND_API_KEY not set — skipping lead notification'); return; }
   const to = (process.env.NOTIFY_EMAIL || 'dcooper@bluescapes.co')
     .split(',').map(e => e.trim()).filter(Boolean);
+  console.log(`[email] Sending lead notification to ${to.join(', ')}`);
   const { fields, details } = parseMessageFields(lead.message);
   const extraRows = fields.map(f =>
     `<tr><td style="padding:10px 0;color:#6b7280;width:160px;vertical-align:top;border-bottom:1px solid #f3f4f6;">${f.label}</td>` +
@@ -174,6 +177,7 @@ async function sendLeadEmail(lead) {
       </div>
     `,
   });
+  console.log(`[email] Lead notification sent to ${to.join(', ')}`);
 }
 
 const app  = express();
