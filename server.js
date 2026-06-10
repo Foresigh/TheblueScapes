@@ -1,6 +1,7 @@
 const express    = require('express');
 const crypto     = require('crypto');
 const path       = require('path');
+const fs         = require('fs');
 const geoip      = require('geoip-lite');
 const { Resend } = require('resend');
 const db         = require('./db/setup');
@@ -10,9 +11,18 @@ const resend   = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_
 const FROM     = process.env.FROM_EMAIL || 'BlueScapes <onboarding@resend.dev>';
 const SITE_URL = process.env.SITE_URL   || 'https://bluescapesutah.com';
 
+// Embed logo as base64 so it always loads in email clients
+let LOGO_SRC = `${SITE_URL}/images/logo.PNG`;
+try {
+  const logoPath = path.join(__dirname, 'images', 'logo.PNG');
+  const logoData = fs.readFileSync(logoPath);
+  LOGO_SRC = `data:image/png;base64,${logoData.toString('base64')}`;
+  console.log('[email] Logo embedded as base64');
+} catch { console.log('[email] Logo file not found, using URL fallback'); }
+
 const EMAIL_HEADER = `
   <div style="background:#08172e;padding:40px 24px 32px;text-align:center;border-radius:8px 8px 0 0;">
-    <img src="${SITE_URL}/images/logo.PNG" alt="BlueScapes" width="130" style="display:block;margin:0 auto 20px;border-radius:50%;" />
+    <img src="${LOGO_SRC}" alt="BlueScapes" width="130" style="display:block;margin:0 auto 20px;border-radius:50%;" />
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
       <tr>
         <td style="vertical-align:middle;padding-right:14px;">
