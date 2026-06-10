@@ -268,7 +268,7 @@ app.post('/api/contact', async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
 
   try {
-    const lead = await db.insertLead({
+    const leadData = {
       first_name:   first_name.trim(),
       last_name:    (last_name || '').trim(),
       email:        email.trim().toLowerCase(),
@@ -280,10 +280,11 @@ app.post('/api/contact', async (req, res) => {
       utm_campaign: utm_campaign || '',
       ip_address:   req.ip       || '',
       referrer:     req.get('referer') || '',
-    });
+    };
+    const lead = await db.insertLead(leadData);
     res.json({ success: true, id: lead.id });
-    sendLeadEmail(lead).catch(err => console.error('Email error:', err.message || err));
-    sendConfirmationEmail(lead).catch(err => console.error('Confirmation email error:', err.message || err));
+    sendLeadEmail({ ...leadData, id: lead.id }).catch(err => console.error('Email error:', err.message || err));
+    sendConfirmationEmail({ ...leadData, id: lead.id }).catch(err => console.error('Confirmation email error:', err.message || err));
   } catch (err) {
     console.error('insertLead error:', err.message);
     res.status(500).json({ error: 'Could not save lead' });

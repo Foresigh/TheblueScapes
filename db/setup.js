@@ -71,7 +71,7 @@ async function insertLead(f) {
        (first_name,last_name,email,phone,project_type,message,
         utm_source,utm_medium,utm_campaign,ip_address,referrer)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
-     RETURNING id`,
+     RETURNING *`,
     [f.first_name, f.last_name, f.email, f.phone, f.project_type, f.message,
      f.utm_source, f.utm_medium, f.utm_campaign, f.ip_address, f.referrer]
   );
